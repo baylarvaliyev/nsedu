@@ -1,26 +1,42 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* North Star palette */
+  --color-night: #0b1026;
+  --color-night-deep: #060815;
+  --color-star-gold: #f2c14e;
+  --color-star-gold-soft: #f2c14e99;
+  --color-ivory: #f5f3ee;
+  --color-slate-blue: #8a93b8;
+  --color-slate-blue-dim: #5b6389;
+
+  --font-display: "Fraunces", serif;
+  --font-body: "Inter", sans-serif;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-night: var(--color-night);
+  --color-night-deep: var(--color-night-deep);
+  --color-star-gold: var(--color-star-gold);
+  --color-ivory: var(--color-ivory);
+  --color-slate-blue: var(--color-slate-blue);
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
+}
+
+h1, h2, h3, .font-display {
+  font-family: var(--font-display);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
