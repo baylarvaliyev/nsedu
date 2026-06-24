@@ -1,32 +1,38 @@
-export default function Footer() {
+import type { Locale } from "@/lib/locale";
+import { localizedPath } from "@/lib/locale";
+import { UI_STRINGS } from "@/lib/uiStrings";
+
+export default function Footer({ locale = "en" as Locale }: { locale?: Locale }) {
+  const t = UI_STRINGS[locale] ?? UI_STRINGS.en;
+
   return (
     <footer className="bg-[#060815] border-t border-[#8A93B8]/10">
       <div className="max-w-6xl mx-auto px-6 py-12 grid gap-10 sm:grid-cols-3">
         <div>
           <p className="font-display text-lg text-[#F5F3EE]">North Star Academy</p>
           <p className="font-body text-sm text-[#8A93B8] mt-2 max-w-xs">
-            Data science, analytics, and language bootcamps in Baku.
+            {t.footer_tagline}
           </p>
         </div>
 
         <div>
           <p className="font-body text-xs uppercase tracking-[0.2em] text-[#8A93B8] mb-3">
-            Explore
+            {t.footer_explore}
           </p>
           <div className="flex flex-col gap-2">
-            <a href="#courses" className="font-body text-sm text-[#F5F3EE]/80 hover:text-[#F5F3EE]">Courses</a>
-            <a href="/blog" className="font-body text-sm text-[#F5F3EE]/80 hover:text-[#F5F3EE]">Blog</a>
-            <a href="#faq" className="font-body text-sm text-[#F5F3EE]/80 hover:text-[#F5F3EE]">FAQ</a>
-            <a href="/certificates" className="font-body text-sm text-[#F5F3EE]/80 hover:text-[#F5F3EE]">Certificates</a>
+            <a href="#courses" className="font-body text-sm text-[#F5F3EE]/80 hover:text-[#F5F3EE]">{t.footer_courses}</a>
+            <a href={localizedPath("/blog", locale)} className="font-body text-sm text-[#F5F3EE]/80 hover:text-[#F5F3EE]">{t.footer_blog}</a>
+            <a href="#faq" className="font-body text-sm text-[#F5F3EE]/80 hover:text-[#F5F3EE]">{t.footer_faq}</a>
+            <a href={localizedPath("/certificates", locale)} className="font-body text-sm text-[#F5F3EE]/80 hover:text-[#F5F3EE]">{t.footer_certificates}</a>
           </div>
         </div>
 
         <div>
           <p className="font-body text-xs uppercase tracking-[0.2em] text-[#8A93B8] mb-3">
-            Contact
+            {t.footer_contact}
           </p>
           <div className="flex flex-col gap-2">
-            <a href="#contact" className="font-body text-sm text-[#F5F3EE]/80 hover:text-[#F5F3EE]">Talk to an advisor</a>
+            <a href="#contact" className="font-body text-sm text-[#F5F3EE]/80 hover:text-[#F5F3EE]">{t.footer_talk_advisor}</a>
             <p className="font-body text-sm text-[#F5F3EE]/80">Baku, Azerbaijan</p>
           </div>
         </div>
@@ -34,7 +40,7 @@ export default function Footer() {
 
       <div className="max-w-6xl mx-auto px-6 py-6 border-t border-[#8A93B8]/10">
         <p className="font-body text-xs text-[#8A93B8]">
-          © {new Date().getFullYear()} North Star Academy. All rights reserved.
+          © {new Date().getFullYear()} North Star Academy. {t.footer_rights}
         </p>
       </div>
     </footer>

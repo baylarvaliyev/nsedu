@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import type { Locale } from "@/lib/locale";
 
 // WhatsApp number for North Star Academy enrollment leads.
 const WHATSAPP_NUMBER = "994773698929";
@@ -10,13 +11,67 @@ const WHATSAPP_NUMBER = "994773698929";
 // its own Web3Forms account + key for North Star Academy when ready.
 const WEB3FORMS_ACCESS_KEY = "ef4328e5-9f87-4b48-b570-ade6af479224";
 
+const ENROLL_STRINGS = {
+  en: {
+    name: "Your name",
+    phone: "Phone number",
+    email: "Email (optional)",
+    apply_for: "Apply for",
+    submit: "Request to enroll",
+    sending: "Sending...",
+    error_required: "Please share your name and phone number.",
+    error_db: "Something went wrong saving your request. Please try again.",
+    thanks: "Thanks",
+    confirmed_pre: "We've got your request for",
+    confirmed_post: "An advisor will reach out shortly.",
+    whatsapp_cta: "Message us on WhatsApp now",
+    whatsapp_message: (course: string) =>
+      `Hi! I'm interested in the ${course} course at North Star Academy.`,
+  },
+  az: {
+    name: "Adınız",
+    phone: "Telefon nömrəsi",
+    email: "E-poçt (məcburi deyil)",
+    apply_for: "Müraciət et:",
+    submit: "Qeydiyyatdan keç",
+    sending: "Göndərilir...",
+    error_required: "Zəhmət olmasa adınızı və telefon nömrənizi qeyd edin.",
+    error_db: "Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.",
+    thanks: "Təşəkkürlər",
+    confirmed_pre: "Müraciətinizi aldıq:",
+    confirmed_post: "Məsləhətçimiz tezliklə sizinlə əlaqə saxlayacaq.",
+    whatsapp_cta: "İndi WhatsApp-da yazın",
+    whatsapp_message: (course: string) =>
+      `Salam! North Star Academy-də ${course} kursu ilə maraqlanıram.`,
+  },
+  ru: {
+    name: "Ваше имя",
+    phone: "Номер телефона",
+    email: "Email (необязательно)",
+    apply_for: "Заявка на",
+    submit: "Подать заявку",
+    sending: "Отправка...",
+    error_required: "Пожалуйста, укажите имя и номер телефона.",
+    error_db: "Что-то пошло не так. Попробуйте ещё раз.",
+    thanks: "Спасибо",
+    confirmed_pre: "Мы получили вашу заявку на",
+    confirmed_post: "Консультант скоро с вами свяжется.",
+    whatsapp_cta: "Написать в WhatsApp сейчас",
+    whatsapp_message: (course: string) =>
+      `Здравствуйте! Меня интересует курс ${course} в North Star Academy.`,
+  },
+} as const;
+
 export default function EnrollmentForm({
   courseId,
   courseTitle,
+  locale = "en" as Locale,
 }: {
   courseId: string;
   courseTitle: string;
+  locale?: Locale;
 }) {
+  const t = ENROLL_STRINGS[locale];
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
@@ -29,7 +84,7 @@ export default function EnrollmentForm({
     setError(null);
 
     if (!name.trim() || !phone.trim()) {
-      setError("Please share your name and phone number.");
+      setError(t.error_required);
       return;
     }
 
@@ -46,7 +101,7 @@ export default function EnrollmentForm({
 
     if (dbError) {
       setSubmitting(false);
-      setError("Something went wrong saving your request. Please try again.");
+      setError(t.error_db);
       return;
     }
 
@@ -73,20 +128,17 @@ export default function EnrollmentForm({
     setDone(true);
   }
 
-  const whatsappMessage = encodeURIComponent(
-    `Hi! I'm interested in the ${courseTitle} course at North Star Academy.`
-  );
+  const whatsappMessage = encodeURIComponent(t.whatsapp_message(courseTitle));
   const whatsappLink = `https://wa.me/${WHATSAPP_NUMBER}?text=${whatsappMessage}`;
 
   if (done) {
     return (
       <div className="rounded-2xl border border-[#8A93B8]/15 bg-[#0f1530] p-6 text-center">
         <p className="font-display text-lg text-[#F5F3EE] mb-2">
-          Thanks, {name.split(" ")[0]}!
+          {t.thanks}, {name.split(" ")[0]}!
         </p>
         <p className="font-body text-sm text-[#8A93B8] mb-4">
-          We've got your request for {courseTitle}. An advisor will reach out
-          shortly.
+          {t.confirmed_pre} {courseTitle}. {t.confirmed_post}
         </p>
         <a
           href={whatsappLink}
@@ -94,7 +146,7 @@ export default function EnrollmentForm({
           rel="noopener noreferrer"
           className="inline-flex items-center justify-center rounded-full bg-[#25D366] text-white font-body text-sm font-semibold px-5 py-2.5 hover:bg-[#21bd5b] transition-colors"
         >
-          Message us on WhatsApp now
+          {t.whatsapp_cta}
         </a>
       </div>
     );
@@ -106,26 +158,26 @@ export default function EnrollmentForm({
       className="rounded-2xl border border-[#8A93B8]/15 bg-[#0f1530] p-6"
     >
       <p className="font-display text-lg text-[#F5F3EE] mb-4">
-        Apply for {courseTitle}
+        {t.apply_for} {courseTitle}
       </p>
 
       <div className="flex flex-col gap-3">
         <input
           value={name}
           onChange={(e) => setName(e.target.value)}
-          placeholder="Your name"
+          placeholder={t.name}
           className="w-full rounded-lg bg-[#0b1026] border border-[#8A93B8]/20 px-3 py-2 text-[#F5F3EE] font-body text-sm focus:outline-none focus:border-[#F2C14E]/50"
         />
         <input
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
-          placeholder="Phone number"
+          placeholder={t.phone}
           className="w-full rounded-lg bg-[#0b1026] border border-[#8A93B8]/20 px-3 py-2 text-[#F5F3EE] font-body text-sm focus:outline-none focus:border-[#F2C14E]/50"
         />
         <input
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          placeholder="Email (optional)"
+          placeholder={t.email}
           type="email"
           className="w-full rounded-lg bg-[#0b1026] border border-[#8A93B8]/20 px-3 py-2 text-[#F5F3EE] font-body text-sm focus:outline-none focus:border-[#F2C14E]/50"
         />
@@ -140,7 +192,7 @@ export default function EnrollmentForm({
         disabled={submitting}
         className="w-full mt-4 rounded-full bg-[#F2C14E] text-[#0B1026] font-body font-semibold text-sm py-2.5 hover:bg-[#f5cd6b] transition-colors disabled:opacity-60"
       >
-        {submitting ? "Sending..." : "Request to enroll"}
+        {submitting ? t.sending : t.submit}
       </button>
     </form>
   );

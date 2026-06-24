@@ -2,13 +2,22 @@
 
 import { motion } from "framer-motion";
 import { generateStarPositions } from "@/lib/stars";
+import type { Locale } from "@/lib/locale";
+import { UI_STRINGS } from "@/lib/uiStrings";
 
 const AMBIENT_STARS = generateStarPositions(60);
 
-export default function Hero({ ready }: { ready: boolean }) {
+export default function Hero({
+  ready,
+  locale = "en" as Locale,
+}: {
+  ready: boolean;
+  locale?: Locale;
+}) {
+  const t = UI_STRINGS[locale];
+
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#0b1026]">
-      {/* Ambient static star field — quiet, no looping, just texture */}
       <svg
         viewBox="0 0 100 100"
         preserveAspectRatio="xMidYMid slice"
@@ -26,7 +35,7 @@ export default function Hero({ ready }: { ready: boolean }) {
           transition={{ duration: 0.8, delay: 0.1 }}
           className="font-body text-xs uppercase tracking-[0.3em] text-[#8A93B8] mb-6"
         >
-          Baku · Data Science · Analytics · Languages
+          {t.hero_eyebrow}
         </motion.p>
 
         <motion.h1
@@ -35,9 +44,9 @@ export default function Hero({ ready }: { ready: boolean }) {
           transition={{ duration: 0.9, delay: 0.25 }}
           className="font-display text-4xl sm:text-6xl leading-tight text-[#F5F3EE]"
         >
-          Skills that point
+          {t.hero_title_line1}
           <br />
-          somewhere real.
+          {t.hero_title_line2}
         </motion.h1>
 
         <motion.p
@@ -46,9 +55,7 @@ export default function Hero({ ready }: { ready: boolean }) {
           transition={{ duration: 0.9, delay: 0.4 }}
           className="font-body text-base sm:text-lg text-[#8A93B8] mt-6 max-w-xl mx-auto"
         >
-          Bootcamps in data science, analytics, and Python — plus English,
-          Russian, and Excel courses built for people who want a clear next
-          step, not just a certificate.
+          {t.hero_subtitle}
         </motion.p>
 
         <motion.div
@@ -61,13 +68,13 @@ export default function Hero({ ready }: { ready: boolean }) {
             href="#courses"
             className="inline-flex items-center justify-center rounded-full bg-[#F2C14E] px-7 py-3 font-body font-semibold text-[#0B1026] hover:bg-[#f5cd6b] transition-colors"
           >
-            See all courses
+            {t.hero_cta_courses}
           </a>
           <a
             href="#contact"
             className="inline-flex items-center justify-center rounded-full border border-[#8A93B8]/40 px-7 py-3 font-body font-medium text-[#F5F3EE] hover:border-[#8A93B8] transition-colors"
           >
-            Talk to an advisor
+            {t.hero_cta_advisor}
           </a>
         </motion.div>
       </div>

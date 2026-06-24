@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { CheckCircle2, XCircle } from "lucide-react";
+import type { Locale } from "@/lib/locale";
 
 type Result = {
   is_valid: boolean;
@@ -12,7 +13,69 @@ type Result = {
   issue_date: string;
 } | null;
 
-export default function CertificateVerifier() {
+const VERIFY_STRINGS = {
+  en: {
+    first_name: "First name",
+    last_name: "Last name",
+    cert_number: "Certificate number (e.g. NSA-2026-1234)",
+    error_fields: "Please fill in all three fields.",
+    error_generic: "Something went wrong checking that certificate. Please try again.",
+    checking: "Checking...",
+    submit: "Verify certificate",
+    valid_title: "This certificate is genuine.",
+    valid_issued_to: "Issued to",
+    valid_for: "for",
+    valid_on: "on",
+    revoked_title: "This certificate has been revoked.",
+    revoked_body: "This record matched, but is no longer marked as valid. Contact us if you believe this is an error.",
+    not_found_title: "We couldn't verify this certificate.",
+    not_found_pre: "Double-check the name and certificate number, or",
+    not_found_link: "contact us",
+    not_found_post: "for help.",
+  },
+  az: {
+    first_name: "Ad",
+    last_name: "Soyad",
+    cert_number: "Sertifikat nömrəsi (məs. NSA-2026-1234)",
+    error_fields: "Zəhmət olmasa hər üç sahəni doldurun.",
+    error_generic: "Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.",
+    checking: "Yoxlanılır...",
+    submit: "Sertifikatı yoxla",
+    valid_title: "Bu sertifikat həqiqidir.",
+    valid_issued_to: "Verilib:",
+    valid_for: "üçün:",
+    valid_on: "tarixdə:",
+    revoked_title: "Bu sertifikat ləğv edilib.",
+    revoked_body: "Bu qeyd uyğun gəldi, lakin artıq etibarlı sayılmır. Səhv olduğunu düşünürsünüzsə, bizimlə əlaqə saxlayın.",
+    not_found_title: "Bu sertifikatı yoxlaya bilmədik.",
+    not_found_pre: "Adı və sertifikat nömrəsini yoxlayın, və ya",
+    not_found_link: "bizimlə əlaqə saxlayın",
+    not_found_post: "kömək üçün.",
+  },
+  ru: {
+    first_name: "Имя",
+    last_name: "Фамилия",
+    cert_number: "Номер сертификата (напр. NSA-2026-1234)",
+    error_fields: "Пожалуйста, заполните все три поля.",
+    error_generic: "Что-то пошло не так. Попробуйте ещё раз.",
+    checking: "Проверка...",
+    submit: "Проверить сертификат",
+    valid_title: "Этот сертификат подлинный.",
+    valid_issued_to: "Выдан:",
+    valid_for: "за курс:",
+    valid_on: "дата:",
+    revoked_title: "Этот сертификат был отозван.",
+    revoked_body: "Запись найдена, но больше не считается действительной. Свяжитесь с нами, если считаете это ошибкой.",
+    not_found_title: "Не удалось проверить этот сертификат.",
+    not_found_pre: "Проверьте имя и номер сертификата, или",
+    not_found_link: "свяжитесь с нами",
+    not_found_post: "за помощью.",
+  },
+} as const;
+
+export default function CertificateVerifier({ locale = "en" as Locale }: { locale?: Locale }) {
+  const t = VERIFY_STRINGS[locale];
+  const dateLocale = locale === "ru" ? "ru-RU" : locale === "az" ? "az-AZ" : "en-GB";
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [certNumber, setCertNumber] = useState("");
@@ -28,7 +91,7 @@ export default function CertificateVerifier() {
     setResult(null);
 
     if (!firstName.trim() || !lastName.trim() || !certNumber.trim()) {
-      setError("Please fill in all three fields.");
+      setError(t.error_fields);
       return;
     }
 
@@ -45,7 +108,7 @@ export default function CertificateVerifier() {
     setChecked(true);
 
     if (rpcError) {
-      setError("Something went wrong checking that certificate. Please try again.");
+      setError(t.error_generic);
       return;
     }
 
@@ -63,19 +126,19 @@ export default function CertificateVerifier() {
         <input
           value={firstName}
           onChange={(e) => setFirstName(e.target.value)}
-          placeholder="First name"
+          placeholder={t.first_name}
           className="w-full rounded-lg bg-[#0b1026] border border-[#8A93B8]/20 px-3 py-2 text-[#F5F3EE] font-body text-sm focus:outline-none focus:border-[#F2C14E]/50"
         />
         <input
           value={lastName}
           onChange={(e) => setLastName(e.target.value)}
-          placeholder="Last name"
+          placeholder={t.last_name}
           className="w-full rounded-lg bg-[#0b1026] border border-[#8A93B8]/20 px-3 py-2 text-[#F5F3EE] font-body text-sm focus:outline-none focus:border-[#F2C14E]/50"
         />
         <input
           value={certNumber}
           onChange={(e) => setCertNumber(e.target.value)}
-          placeholder="Certificate number (e.g. NSA-2026-1234)"
+          placeholder={t.cert_number}
           className="w-full rounded-lg bg-[#0b1026] border border-[#8A93B8]/20 px-3 py-2 text-[#F5F3EE] font-body text-sm focus:outline-none focus:border-[#F2C14E]/50"
         />
 
@@ -86,7 +149,7 @@ export default function CertificateVerifier() {
           disabled={loading}
           className="rounded-full bg-[#F2C14E] text-[#0B1026] font-body font-semibold text-sm py-2.5 hover:bg-[#f5cd6b] transition-colors disabled:opacity-60"
         >
-          {loading ? "Checking..." : "Verify certificate"}
+          {loading ? t.checking : t.submit}
         </button>
       </form>
 
@@ -97,12 +160,12 @@ export default function CertificateVerifier() {
               <CheckCircle2 className="text-green-400 shrink-0 mt-0.5" size={24} />
               <div>
                 <p className="font-display text-lg text-[#F5F3EE] mb-1">
-                  This certificate is genuine.
+                  {t.valid_title}
                 </p>
                 <p className="font-body text-sm text-[#8A93B8]">
-                  Issued to {result.first_name} {result.last_name}
-                  {result.course_title && ` for ${result.course_title}`} on{" "}
-                  {new Date(result.issue_date).toLocaleDateString("en-GB", {
+                  {t.valid_issued_to} {result.first_name} {result.last_name}
+                  {result.course_title && ` ${t.valid_for} ${result.course_title}`} {t.valid_on}{" "}
+                  {new Date(result.issue_date).toLocaleDateString(dateLocale, {
                     day: "numeric",
                     month: "long",
                     year: "numeric",
@@ -116,11 +179,10 @@ export default function CertificateVerifier() {
               <XCircle className="text-amber-400 shrink-0 mt-0.5" size={24} />
               <div>
                 <p className="font-display text-lg text-[#F5F3EE] mb-1">
-                  This certificate has been revoked.
+                  {t.revoked_title}
                 </p>
                 <p className="font-body text-sm text-[#8A93B8]">
-                  This record matched, but is no longer marked as valid.
-                  Contact us if you believe this is an error.
+                  {t.revoked_body}
                 </p>
               </div>
             </div>
@@ -129,14 +191,14 @@ export default function CertificateVerifier() {
               <XCircle className="text-red-400 shrink-0 mt-0.5" size={24} />
               <div>
                 <p className="font-display text-lg text-[#F5F3EE] mb-1">
-                  We couldn&apos;t verify this certificate.
+                  {t.not_found_title}
                 </p>
                 <p className="font-body text-sm text-[#8A93B8]">
-                  Double-check the name and certificate number, or{" "}
+                  {t.not_found_pre}{" "}
                   <a href="#contact" className="text-[#F2C14E] underline">
-                    contact us
+                    {t.not_found_link}
                   </a>{" "}
-                  for help.
+                  {t.not_found_post}
                 </p>
               </div>
             </div>

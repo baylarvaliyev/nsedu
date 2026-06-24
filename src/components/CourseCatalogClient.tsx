@@ -4,17 +4,64 @@ import { useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import type { Course, Category } from "./CourseCatalog";
+import type { Locale } from "@/lib/locale";
+import { localized, localizedPath } from "@/lib/locale";
+
+const CATALOG_STRINGS = {
+  en: {
+    eyebrow: "Courses",
+    heading: "Find your next step.",
+    all_categories: "All categories",
+    other_courses: "Other courses",
+    course_singular: "course",
+    course_plural: "courses",
+    empty_catalog_pre: "Courses are being added — check back soon, or",
+    empty_catalog_link: "talk to an advisor",
+    empty_catalog_post: "about what's coming up.",
+    empty_category: "No courses in this category yet.",
+    starts: "Starts",
+  },
+  az: {
+    eyebrow: "Kurslar",
+    heading: "Növbəti addımını tap.",
+    all_categories: "Bütün kateqoriyalar",
+    other_courses: "Digər kurslar",
+    course_singular: "kurs",
+    course_plural: "kurs",
+    empty_catalog_pre: "Kurslar əlavə olunur — tezliklə yoxla, və ya",
+    empty_catalog_link: "məsləhətçi ilə danış",
+    empty_catalog_post: "yaxın günlərdə nə olacağı haqqında.",
+    empty_category: "Bu kateqoriyada hələ kurs yoxdur.",
+    starts: "Başlanğıc",
+  },
+  ru: {
+    eyebrow: "Курсы",
+    heading: "Найди свой следующий шаг.",
+    all_categories: "Все категории",
+    other_courses: "Другие курсы",
+    course_singular: "курс",
+    course_plural: "курсов",
+    empty_catalog_pre: "Курсы добавляются — загляните позже, или",
+    empty_catalog_link: "поговорите с консультантом",
+    empty_catalog_post: "о том, что скоро появится.",
+    empty_category: "В этой категории пока нет курсов.",
+    starts: "Старт",
+  },
+} as const;
 
 export default function CourseCatalogClient({
   courses,
   categories,
+  locale = "en" as Locale,
 }: {
   courses: Course[];
   categories: Category[];
+  locale?: Locale;
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const activeSlug = searchParams.get("category");
+  const t = CATALOG_STRINGS[locale];
 
   const coursesByCategory = useMemo(() => {
     const map = new Map<string, Course[]>();
@@ -44,14 +91,15 @@ export default function CourseCatalogClient({
     } else {
       params.delete("category");
     }
-    router.push(`/?${params.toString()}#courses`, { scroll: false });
+    const basePath = localizedPath("/", locale);
+    router.push(`${basePath}?${params.toString()}#courses`, { scroll: false });
   }
 
   return (
     <section id="courses" className="bg-[#0b1026] py-24 px-6">
       <div className="max-w-6xl mx-auto">
         <p className="font-body text-xs uppercase tracking-[0.3em] text-[#8A93B8] mb-4">
-          Courses
+          {t.eyebrow}
         </p>
 
         {showingCourseList ? (
@@ -61,15 +109,15 @@ export default function CourseCatalogClient({
               className="inline-flex items-center gap-2 font-body text-sm text-[#8A93B8] hover:text-[#F5F3EE] transition-colors mb-6"
             >
               <ArrowLeft size={16} />
-              All categories
+              {t.all_categories}
             </button>
             <h2 className="font-display text-3xl sm:text-4xl text-[#F5F3EE] mb-12">
-              {activeCategory ? activeCategory.name_en : "Other courses"}
+              {activeCategory ? localized(activeCategory, "name", locale) : t.other_courses}
             </h2>
           </>
         ) : (
           <h2 className="font-display text-3xl sm:text-4xl text-[#F5F3EE] mb-12">
-            Find your next step.
+            {t.heading}
           </h2>
         )}
 
@@ -78,11 +126,11 @@ export default function CourseCatalogClient({
             {courses.length === 0 ? (
               <div className="rounded-2xl border border-dashed border-[#8A93B8]/30 py-16 text-center">
                 <p className="font-body text-[#8A93B8]">
-                  Courses are being added — check back soon, or{" "}
+                  {t.empty_catalog_pre}{" "}
                   <a href="#contact" className="text-[#F2C14E] underline">
-                    talk to an advisor
+                    {t.empty_catalog_link}
                   </a>{" "}
-                  about what&apos;s coming up.
+                  {t.empty_catalog_post}
                 </p>
               </div>
             ) : (
@@ -98,10 +146,10 @@ export default function CourseCatalogClient({
                         className="group text-left rounded-2xl border border-[#8A93B8]/15 bg-[#0f1530] p-6 hover:border-[#F2C14E]/40 transition-colors"
                       >
                         <h3 className="font-display text-xl text-[#F5F3EE] group-hover:text-[#F2C14E] transition-colors mb-2">
-                          {cat.name_en}
+                          {localized(cat, "name", locale)}
                         </h3>
                         <p className="font-body text-sm text-[#8A93B8]">
-                          {count} {count === 1 ? "course" : "courses"}
+                          {count} {count === 1 ? t.course_singular : t.course_plural}
                         </p>
                       </button>
                     );
@@ -113,11 +161,11 @@ export default function CourseCatalogClient({
                     className="group text-left rounded-2xl border border-[#8A93B8]/15 bg-[#0f1530] p-6 hover:border-[#F2C14E]/40 transition-colors"
                   >
                     <h3 className="font-display text-xl text-[#F5F3EE] group-hover:text-[#F2C14E] transition-colors mb-2">
-                      Other courses
+                      {t.other_courses}
                     </h3>
                     <p className="font-body text-sm text-[#8A93B8]">
                       {uncategorizedCourses.length}{" "}
-                      {uncategorizedCourses.length === 1 ? "course" : "courses"}
+                      {uncategorizedCourses.length === 1 ? t.course_singular : t.course_plural}
                     </p>
                   </button>
                 )}
@@ -132,43 +180,47 @@ export default function CourseCatalogClient({
             {visibleCourses.length === 0 ? (
               <div className="rounded-2xl border border-dashed border-[#8A93B8]/30 py-16 text-center">
                 <p className="font-body text-[#8A93B8]">
-                  No courses in this category yet.
+                  {t.empty_category}
                 </p>
               </div>
             ) : (
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {visibleCourses.map((course) => (
-                  <a
-                    key={course.id}
-                    href={`/courses/${course.slug}`}
-                    className="group rounded-2xl border border-[#8A93B8]/15 bg-[#0f1530] p-6 hover:border-[#F2C14E]/40 transition-colors flex flex-col"
-                  >
-                    <h3 className="font-display text-xl text-[#F5F3EE] mb-2">
-                      {course.title_en}
-                    </h3>
-                    {course.description_en && (
-                      <p className="font-body text-sm text-[#8A93B8] mb-4 line-clamp-3">
-                        {course.description_en}
-                      </p>
-                    )}
-                    <div className="mt-auto flex items-center justify-between pt-4 border-t border-[#8A93B8]/10">
-                      {course.price_amount && (
-                        <span className="font-body text-sm font-semibold text-[#F2C14E]">
-                          {course.price_amount} {course.price_currency}
-                        </span>
+                {visibleCourses.map((course) => {
+                  const title = localized(course, "title", locale);
+                  const description = localized(course, "description", locale);
+                  return (
+                    <a
+                      key={course.id}
+                      href={localizedPath(`/courses/${course.slug}`, locale)}
+                      className="group rounded-2xl border border-[#8A93B8]/15 bg-[#0f1530] p-6 hover:border-[#F2C14E]/40 transition-colors flex flex-col"
+                    >
+                      <h3 className="font-display text-xl text-[#F5F3EE] mb-2">
+                        {title}
+                      </h3>
+                      {description && (
+                        <p className="font-body text-sm text-[#8A93B8] mb-4 line-clamp-3">
+                          {description}
+                        </p>
                       )}
-                      {course.start_date && (
-                        <span className="font-body text-xs text-[#8A93B8]">
-                          Starts{" "}
-                          {new Date(course.start_date).toLocaleDateString("en-GB", {
-                            day: "numeric",
-                            month: "short",
-                          })}
-                        </span>
-                      )}
-                    </div>
-                  </a>
-                ))}
+                      <div className="mt-auto flex items-center justify-between pt-4 border-t border-[#8A93B8]/10">
+                        {course.price_amount && (
+                          <span className="font-body text-sm font-semibold text-[#F2C14E]">
+                            {course.price_amount} {course.price_currency}
+                          </span>
+                        )}
+                        {course.start_date && (
+                          <span className="font-body text-xs text-[#8A93B8]">
+                            {t.starts}{" "}
+                            {new Date(course.start_date).toLocaleDateString(
+                              locale === "ru" ? "ru-RU" : locale === "az" ? "az-AZ" : "en-GB",
+                              { day: "numeric", month: "short" }
+                            )}
+                          </span>
+                        )}
+                      </div>
+                    </a>
+                  );
+                })}
               </div>
             )}
           </>
