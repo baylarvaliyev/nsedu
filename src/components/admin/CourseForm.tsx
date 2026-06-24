@@ -36,6 +36,9 @@ export type CourseFormValues = {
   description_az: string;
   description_en: string;
   description_ru: string;
+  long_description_az: string;
+  long_description_en: string;
+  long_description_ru: string;
   price_amount: string;
   price_currency: string;
   start_date: string;
@@ -52,6 +55,9 @@ const EMPTY: CourseFormValues = {
   description_az: "",
   description_en: "",
   description_ru: "",
+  long_description_az: "",
+  long_description_en: "",
+  long_description_ru: "",
   price_amount: "",
   price_currency: "AZN",
   start_date: "",
@@ -119,6 +125,9 @@ export default function CourseForm({
       description_az: values.description_az.trim() || null,
       description_en: values.description_en.trim() || null,
       description_ru: values.description_ru.trim() || null,
+      long_description_az: values.long_description_az.trim() || null,
+      long_description_en: values.long_description_en.trim() || null,
+      long_description_ru: values.long_description_ru.trim() || null,
       price_amount: values.price_amount ? Number(values.price_amount) : null,
       price_currency: values.price_currency,
       start_date: values.start_date || null,
@@ -196,29 +205,69 @@ export default function CourseForm({
       </div>
 
       <div className="bg-white rounded-xl border border-[#e5e3dc] p-6 mb-6">
-        <h2 className="font-display text-lg text-[#0B1026] mb-4">Descriptions</h2>
+        <h2 className="font-display text-lg text-[#0B1026] mb-1">
+          Short description
+        </h2>
+        <p className="font-body text-xs text-[#888] mb-4">
+          Shown on the course card in the catalog. Keep it to 1–2 sentences.
+        </p>
         <div className="grid gap-4">
-          <Field label="Description (English)">
+          <Field label="Short description (English)">
             <textarea
               value={values.description_en}
               onChange={(e) => update("description_en", e.target.value)}
-              rows={3}
+              rows={2}
               className={inputClass}
             />
           </Field>
-          <Field label="Description (Azərbaycan)">
+          <Field label="Short description (Azərbaycan)">
             <textarea
               value={values.description_az}
               onChange={(e) => update("description_az", e.target.value)}
-              rows={3}
+              rows={2}
               className={inputClass}
             />
           </Field>
-          <Field label="Description (Русский)">
+          <Field label="Short description (Русский)">
             <textarea
               value={values.description_ru}
               onChange={(e) => update("description_ru", e.target.value)}
-              rows={3}
+              rows={2}
+              className={inputClass}
+            />
+          </Field>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-xl border border-[#e5e3dc] p-6 mb-6">
+        <h2 className="font-display text-lg text-[#0B1026] mb-1">
+          Full description
+        </h2>
+        <p className="font-body text-xs text-[#888] mb-4">
+          Shown on the course&apos;s own page. Can be as long as you like.
+        </p>
+        <div className="grid gap-4">
+          <Field label="Full description (English)">
+            <textarea
+              value={values.long_description_en}
+              onChange={(e) => update("long_description_en", e.target.value)}
+              rows={6}
+              className={inputClass}
+            />
+          </Field>
+          <Field label="Full description (Azərbaycan)">
+            <textarea
+              value={values.long_description_az}
+              onChange={(e) => update("long_description_az", e.target.value)}
+              rows={6}
+              className={inputClass}
+            />
+          </Field>
+          <Field label="Full description (Русский)">
+            <textarea
+              value={values.long_description_ru}
+              onChange={(e) => update("long_description_ru", e.target.value)}
+              rows={6}
               className={inputClass}
             />
           </Field>
