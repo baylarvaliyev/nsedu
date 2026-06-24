@@ -17,6 +17,7 @@ export default function Footer() {
             <a href="#courses" className="font-body text-sm text-[#F5F3EE]/80 hover:text-[#F5F3EE]">Courses</a>
             <a href="/blog" className="font-body text-sm text-[#F5F3EE]/80 hover:text-[#F5F3EE]">Blog</a>
             <a href="#faq" className="font-body text-sm text-[#F5F3EE]/80 hover:text-[#F5F3EE]">FAQ</a>
+            <a href="/certificates" className="font-body text-sm text-[#F5F3EE]/80 hover:text-[#F5F3EE]">Certificates</a>
           </div>
         </div>
 
