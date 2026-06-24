@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/client";
 import {
   LayoutDashboard,
   BookOpen,
+  FolderTree,
   Newspaper,
   HelpCircle,
   Tag,
@@ -18,6 +19,7 @@ type Role = "owner" | "editor";
 const NAV_ITEMS: { href: string; label: string; icon: typeof BookOpen; ownerOnly?: boolean }[] = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/courses", label: "Courses", icon: BookOpen },
+  { href: "/admin/categories", label: "Categories", icon: FolderTree },
   { href: "/admin/blog", label: "Blog", icon: Newspaper },
   { href: "/admin/faq", label: "FAQ", icon: HelpCircle, ownerOnly: true },
   { href: "/admin/pricing", label: "Pricing", icon: Tag, ownerOnly: true },
