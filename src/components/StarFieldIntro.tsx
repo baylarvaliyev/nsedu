@@ -55,27 +55,33 @@ export default function StarFieldIntro({
       "(prefers-reduced-motion: reduce)"
     ).matches;
 
+    const timers: ReturnType<typeof setTimeout>[] = [];
+
     if (prefersReducedMotion) {
-      // Skip the looping animation; still show the brand moment briefly.
       setPhase("reveal");
-      const t = setTimeout(() => {
-        setPhase("done");
-        onComplete();
-      }, 900);
-      return () => clearTimeout(t);
+      timers.push(
+        setTimeout(() => {
+          setPhase("done");
+          onComplete();
+        }, 900)
+      );
+    } else {
+      timers.push(setTimeout(() => setPhase("resolve"), 900));
+      timers.push(setTimeout(() => setPhase("reveal"), 2200));
+      timers.push(
+        setTimeout(() => {
+          setPhase("done");
+          onComplete();
+        }, 3400)
+      );
     }
 
-    const t1 = setTimeout(() => setPhase("resolve"), 900);
-    const t2 = setTimeout(() => setPhase("reveal"), 2400);
-    const t3 = setTimeout(() => {
-      setPhase("done");
-      onComplete();
-    }, 3400);
     return () => {
-      clearTimeout(t1);
-      clearTimeout(t2);
-      clearTimeout(t3);
+      timers.forEach(clearTimeout);
     };
+    // onComplete must stay referentially stable in the parent (it's wrapped
+    // in useCallback in page.tsx) — otherwise this effect would re-fire on
+    // every re-render and restart the sequence mid-playback.
   }, [onComplete]);
 
   return (
