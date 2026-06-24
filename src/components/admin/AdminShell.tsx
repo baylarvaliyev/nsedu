@@ -8,7 +8,6 @@ import {
   FolderTree,
   Newspaper,
   HelpCircle,
-  Tag,
   Award,
   Users,
   LogOut,
@@ -22,7 +21,6 @@ const NAV_ITEMS: { href: string; label: string; icon: typeof BookOpen; ownerOnly
   { href: "/admin/categories", label: "Categories", icon: FolderTree },
   { href: "/admin/blog", label: "Blog", icon: Newspaper },
   { href: "/admin/faq", label: "FAQ", icon: HelpCircle, ownerOnly: true },
-  { href: "/admin/pricing", label: "Pricing", icon: Tag, ownerOnly: true },
   { href: "/admin/certificates", label: "Certificates", icon: Award, ownerOnly: true },
   { href: "/admin/staff", label: "Staff", icon: Users, ownerOnly: true },
 ];
