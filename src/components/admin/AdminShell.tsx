@@ -9,6 +9,7 @@ import {
   Newspaper,
   HelpCircle,
   Award,
+  Briefcase,
   Users,
   LogOut,
 } from "lucide-react";
@@ -20,6 +21,7 @@ const NAV_ITEMS: { href: string; label: string; icon: typeof BookOpen; ownerOnly
   { href: "/admin/courses", label: "Courses", icon: BookOpen },
   { href: "/admin/categories", label: "Categories", icon: FolderTree },
   { href: "/admin/blog", label: "Blog", icon: Newspaper },
+  { href: "/admin/careers", label: "Careers", icon: Briefcase },
   { href: "/admin/faq", label: "FAQ", icon: HelpCircle, ownerOnly: true },
   { href: "/admin/certificates", label: "Certificates", icon: Award, ownerOnly: true },
   { href: "/admin/staff", label: "Staff", icon: Users, ownerOnly: true },
@@ -51,7 +53,7 @@ export default function AdminShell({
     <div className="min-h-screen flex bg-[#f7f6f3]">
       <aside className="w-60 bg-[#0b1026] flex flex-col">
         <div className="px-6 py-6 border-b border-[#8A93B8]/10">
-          <p className="font-display text-lg text-[#F5F3EE]">North Star</p>
+          <p className="font-display text-lg text-[#F5F3EE]">North Star Academy</p>
           <p className="font-body text-xs text-[#8A93B8] mt-0.5">{name}</p>
           <span className="inline-block mt-2 font-body text-[10px] uppercase tracking-wider text-[#F2C14E] bg-[#F2C14E]/10 rounded px-2 py-0.5">
             {role}

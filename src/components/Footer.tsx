@@ -25,6 +25,7 @@ export default function Footer({ locale = "en" as Locale }: { locale?: Locale })
             <a href={localizedPath("/blog", locale)} className="font-body text-sm text-[#F5F3EE]/80 hover:text-[#F5F3EE]">{t.footer_blog}</a>
             <a href={`${coursesPath}#faq`} className="font-body text-sm text-[#F5F3EE]/80 hover:text-[#F5F3EE]">{t.footer_faq}</a>
             <a href={localizedPath("/certificates", locale)} className="font-body text-sm text-[#F5F3EE]/80 hover:text-[#F5F3EE]">{t.footer_certificates}</a>
+            <a href={localizedPath("/careers", locale)} className="font-body text-sm text-[#F5F3EE]/80 hover:text-[#F5F3EE]">{locale === "az" ? "Karyera" : locale === "ru" ? "Карьера" : "Careers"}</a>
           </div>
         </div>
 
