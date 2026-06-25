@@ -17,7 +17,7 @@ type FaqItem = {
 
 const FAQ_HEADING = {
   en: { eyebrow: "FAQ", heading: "Common questions." },
-  az: { eyebrow: "FAQ", heading: "Tez-tez verilən suallar." },
+  az: { eyebrow: "Suallar", heading: "Tez-tez verilən suallar." },
   ru: { eyebrow: "Вопросы", heading: "Частые вопросы." },
 } as const;
 
