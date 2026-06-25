@@ -4,6 +4,7 @@ import { UI_STRINGS } from "@/lib/uiStrings";
 
 export default function Footer({ locale = "en" as Locale }: { locale?: Locale }) {
   const t = UI_STRINGS[locale] ?? UI_STRINGS.en;
+  const homePath = localizedPath("/", locale);
 
   return (
     <footer className="bg-[#060815] border-t border-[#8A93B8]/10">
@@ -20,9 +21,9 @@ export default function Footer({ locale = "en" as Locale }: { locale?: Locale })
             {t.footer_explore}
           </p>
           <div className="flex flex-col gap-2">
-            <a href="#courses" className="font-body text-sm text-[#F5F3EE]/80 hover:text-[#F5F3EE]">{t.footer_courses}</a>
+            <a href={`${homePath}#courses`} className="font-body text-sm text-[#F5F3EE]/80 hover:text-[#F5F3EE]">{t.footer_courses}</a>
             <a href={localizedPath("/blog", locale)} className="font-body text-sm text-[#F5F3EE]/80 hover:text-[#F5F3EE]">{t.footer_blog}</a>
-            <a href="#faq" className="font-body text-sm text-[#F5F3EE]/80 hover:text-[#F5F3EE]">{t.footer_faq}</a>
+            <a href={`${homePath}#faq`} className="font-body text-sm text-[#F5F3EE]/80 hover:text-[#F5F3EE]">{t.footer_faq}</a>
             <a href={localizedPath("/certificates", locale)} className="font-body text-sm text-[#F5F3EE]/80 hover:text-[#F5F3EE]">{t.footer_certificates}</a>
           </div>
         </div>
@@ -32,7 +33,7 @@ export default function Footer({ locale = "en" as Locale }: { locale?: Locale })
             {t.footer_contact}
           </p>
           <div className="flex flex-col gap-2">
-            <a href="#contact" className="font-body text-sm text-[#F5F3EE]/80 hover:text-[#F5F3EE]">{t.footer_talk_advisor}</a>
+            <a href={`${homePath}#contact`} className="font-body text-sm text-[#F5F3EE]/80 hover:text-[#F5F3EE]">{t.footer_talk_advisor}</a>
             <p className="font-body text-sm text-[#F5F3EE]/80">Baku, Azerbaijan</p>
           </div>
         </div>

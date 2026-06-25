@@ -3,6 +3,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import CourseCatalog from "@/components/CourseCatalog";
 import FaqSection from "@/components/FaqSection";
+import ContactSection from "@/components/ContactSection";
 import { createClient } from "@/lib/supabase/server";
 import type { Locale } from "@/lib/locale";
 
@@ -24,6 +25,7 @@ export default async function HomePageContent({
         <HomeIntro locale={locale} />
         <CourseCatalog locale={locale} />
         <FaqSection items={faqItems ?? []} locale={locale} />
+        <ContactSection locale={locale} />
       </main>
       <Footer locale={locale} />
     </>

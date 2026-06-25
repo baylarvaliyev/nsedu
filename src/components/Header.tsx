@@ -13,10 +13,11 @@ export default function Header({ locale = "en" as Locale }: { locale?: Locale })
   const t = UI_STRINGS[locale] ?? UI_STRINGS.en;
 
   const NAV_LINKS = [
-    { href: "#courses", label: t.nav_courses },
-    { href: "#faq", label: t.nav_faq },
+    { href: `${localizedPath("/", locale)}#courses`, label: t.nav_courses },
+    { href: `${localizedPath("/", locale)}#faq`, label: t.nav_faq },
     { href: localizedPath("/blog", locale), label: t.nav_blog },
   ];
+  const contactHref = `${localizedPath("/", locale)}#contact`;
 
   return (
     <header className="fixed top-0 left-0 right-0 z-40 bg-[#0b1026]/80 backdrop-blur-sm border-b border-[#8A93B8]/10">
@@ -37,7 +38,7 @@ export default function Header({ locale = "en" as Locale }: { locale?: Locale })
           ))}
           <LanguageSwitcher currentLocale={locale} />
           <a
-            href="#contact"
+            href={contactHref}
             className="font-body text-sm font-semibold rounded-full bg-[#F2C14E] text-[#0B1026] px-5 py-2 hover:bg-[#f5cd6b] transition-colors"
           >
             {t.nav_apply}
@@ -72,7 +73,7 @@ export default function Header({ locale = "en" as Locale }: { locale?: Locale })
           ))}
           <LanguageSwitcher currentLocale={locale} />
           <a
-            href="#contact"
+            href={contactHref}
             onClick={() => setOpen(false)}
             className="font-body text-sm font-semibold rounded-full bg-[#F2C14E] text-[#0B1026] px-5 py-2 text-center hover:bg-[#f5cd6b] transition-colors"
           >
