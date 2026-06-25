@@ -4,6 +4,7 @@ import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { CheckCircle2, XCircle } from "lucide-react";
 import type { Locale } from "@/lib/locale";
+import { localizedPath } from "@/lib/locale";
 
 type Result = {
   is_valid: boolean;
@@ -75,6 +76,7 @@ const VERIFY_STRINGS = {
 
 export default function CertificateVerifier({ locale = "en" as Locale }: { locale?: Locale }) {
   const t = VERIFY_STRINGS[locale];
+  const contactHref = `${localizedPath("/", locale)}#contact`;
   const dateLocale = locale === "ru" ? "ru-RU" : locale === "az" ? "az-AZ" : "en-GB";
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -195,7 +197,7 @@ export default function CertificateVerifier({ locale = "en" as Locale }: { local
                 </p>
                 <p className="font-body text-sm text-[#8A93B8]">
                   {t.not_found_pre}{" "}
-                  <a href="#contact" className="text-[#F2C14E] underline">
+                  <a href={contactHref} className="text-[#F2C14E] underline">
                     {t.not_found_link}
                   </a>{" "}
                   {t.not_found_post}

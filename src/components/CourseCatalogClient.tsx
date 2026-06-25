@@ -62,6 +62,7 @@ export default function CourseCatalogClient({
   const searchParams = useSearchParams();
   const activeSlug = searchParams.get("category");
   const t = CATALOG_STRINGS[locale];
+  const contactHref = `${localizedPath("/", locale)}#contact`;
 
   const coursesByCategory = useMemo(() => {
     const map = new Map<string, Course[]>();
@@ -127,7 +128,7 @@ export default function CourseCatalogClient({
               <div className="rounded-2xl border border-dashed border-[#8A93B8]/30 py-16 text-center">
                 <p className="font-body text-[#8A93B8]">
                   {t.empty_catalog_pre}{" "}
-                  <a href="#contact" className="text-[#F2C14E] underline">
+                  <a href={contactHref} className="text-[#F2C14E] underline">
                     {t.empty_catalog_link}
                   </a>{" "}
                   {t.empty_catalog_post}
