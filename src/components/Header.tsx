@@ -13,11 +13,11 @@ export default function Header({ locale = "en" as Locale }: { locale?: Locale })
   const t = UI_STRINGS[locale] ?? UI_STRINGS.en;
 
   const NAV_LINKS = [
-    { href: `${localizedPath("/", locale)}#courses`, label: t.nav_courses },
-    { href: `${localizedPath("/", locale)}#faq`, label: t.nav_faq },
+    { href: `${localizedPath("/courses", locale)}#courses`, label: t.nav_courses },
+    { href: `${localizedPath("/courses", locale)}#faq`, label: t.nav_faq },
     { href: localizedPath("/blog", locale), label: t.nav_blog },
   ];
-  const contactHref = `${localizedPath("/", locale)}#contact`;
+  const contactHref = `${localizedPath("/courses", locale)}#contact`;
 
   return (
     <header className="fixed top-0 left-0 right-0 z-40 bg-[#0b1026]/80 backdrop-blur-sm border-b border-[#8A93B8]/10">
@@ -26,7 +26,7 @@ export default function Header({ locale = "en" as Locale }: { locale?: Locale })
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/logo.png" alt="North Star Academy" className="h-9 w-auto" />
           <span className="font-display text-lg text-[#F5F3EE] tracking-tight">
-            North Star
+            North Star Academy
           </span>
         </a>
 

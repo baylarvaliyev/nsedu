@@ -62,7 +62,7 @@ export default function CourseCatalogClient({
   const searchParams = useSearchParams();
   const activeSlug = searchParams.get("category");
   const t = CATALOG_STRINGS[locale];
-  const contactHref = `${localizedPath("/", locale)}#contact`;
+  const contactHref = `${localizedPath("/courses", locale)}#contact`;
 
   const coursesByCategory = useMemo(() => {
     const map = new Map<string, Course[]>();
@@ -92,7 +92,7 @@ export default function CourseCatalogClient({
     } else {
       params.delete("category");
     }
-    const basePath = localizedPath("/", locale);
+    const basePath = localizedPath("/courses", locale);
     router.push(`${basePath}?${params.toString()}#courses`, { scroll: false });
   }
 

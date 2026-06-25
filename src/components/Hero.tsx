@@ -1,11 +1,13 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { generateStarPositions } from "@/lib/stars";
+import { generateOrganicStars } from "@/lib/stars";
 import type { Locale } from "@/lib/locale";
+import { localizedPath } from "@/lib/locale";
 import { UI_STRINGS } from "@/lib/uiStrings";
+import LanguageSwitcher from "./LanguageSwitcher";
 
-const AMBIENT_STARS = generateStarPositions(60);
+const AMBIENT_STARS = generateOrganicStars(90);
 
 export default function Hero({
   ready,
@@ -18,13 +20,26 @@ export default function Hero({
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#0b1026]">
+      <div className="absolute top-6 right-6 z-20">
+        <LanguageSwitcher currentLocale={locale} />
+      </div>
+
       <svg
         viewBox="0 0 100 100"
         preserveAspectRatio="xMidYMid slice"
-        className="absolute inset-0 h-full w-full opacity-40"
+        className="absolute inset-0 h-[120%] w-[120%] -top-[10%] -left-[10%] animate-star-drift"
       >
         {AMBIENT_STARS.map((star, i) => (
-          <circle key={i} cx={star.x} cy={star.y} r={0.15} fill="#F5F3EE" />
+          <circle
+            key={i}
+            cx={star.x}
+            cy={star.y}
+            r={star.size}
+            fill="#F5F3EE"
+            opacity={star.opacity}
+            className="animate-twinkle"
+            style={{ animationDelay: `${star.delay}s` }}
+          />
         ))}
       </svg>
 
@@ -65,13 +80,13 @@ export default function Hero({
           className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4"
         >
           <a
-            href="#courses"
+            href={`${localizedPath("/courses", locale)}#courses`}
             className="inline-flex items-center justify-center rounded-full bg-[#F2C14E] px-7 py-3 font-body font-semibold text-[#0B1026] hover:bg-[#f5cd6b] transition-colors"
           >
             {t.hero_cta_courses}
           </a>
           <a
-            href="#contact"
+            href={`${localizedPath("/courses", locale)}#contact`}
             className="inline-flex items-center justify-center rounded-full border border-[#8A93B8]/40 px-7 py-3 font-body font-medium text-[#F5F3EE] hover:border-[#8A93B8] transition-colors"
           >
             {t.hero_cta_advisor}

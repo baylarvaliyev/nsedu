@@ -76,7 +76,7 @@ const VERIFY_STRINGS = {
 
 export default function CertificateVerifier({ locale = "en" as Locale }: { locale?: Locale }) {
   const t = VERIFY_STRINGS[locale];
-  const contactHref = `${localizedPath("/", locale)}#contact`;
+  const contactHref = `${localizedPath("/courses", locale)}#contact`;
   const dateLocale = locale === "ru" ? "ru-RU" : locale === "az" ? "az-AZ" : "en-GB";
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
