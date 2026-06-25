@@ -22,8 +22,12 @@ export default function Header({ locale = "en" as Locale }: { locale?: Locale })
   return (
     <header className="fixed top-0 left-0 right-0 z-40 bg-[#0b1026]/80 backdrop-blur-sm border-b border-[#8A93B8]/10">
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-        <a href={localizedPath("/", locale)} className="font-display text-lg text-[#F5F3EE] tracking-tight">
-          North Star
+        <a href={localizedPath("/", locale)} className="flex items-center gap-2">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo.png" alt="North Star Academy" className="h-9 w-auto" />
+          <span className="font-display text-lg text-[#F5F3EE] tracking-tight">
+            North Star
+          </span>
         </a>
 
         <nav className="hidden md:flex items-center gap-8">
