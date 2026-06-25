@@ -36,10 +36,10 @@ export const UI_STRINGS = {
     footer_tagline: "Bakıda peşəkar inkişaf üçün kurslar — data, dillər və daha çoxu.",
     footer_rights: "Bütün hüquqlar qorunur.",
     hero_eyebrow: "Bakı · Peşəkar İnkişaf Akademiyası",
-    hero_title_line1: "Bacarıqlar ki",
-    hero_title_line2: "həqiqətən işə yarayır.",
+    hero_title_line1: "Biliklərinizi real",
+    hero_title_line2: "nəticələrə çevirən təhsil.",
     hero_subtitle:
-      "Data elmindən dillərə qədər praktiki kurslar. North Star Academy-də məqsədimiz sertifikat vermək deyil, sizə real nəticə və əməkdaşlıq imkanları qazandırmaqdır.",
+      "Data analitikası, dillər və peşəkar bacarıqlar üzrə praktiki təlimlər. Məqsədimiz sadəcə sertifikat təqdim etmək deyil, sizi əmək bazarında rəqabətqabiliyyətli mütəxəssis kimi formalaşdırmaqdır.",
     hero_cta_courses: "Kurslara baxın",
     hero_cta_advisor: "Məsləhətçi ilə danışın",
   },
