@@ -1,0 +1,67 @@
+-- FAQ content for North Star Academy
+
+insert into faq_items (question_en, question_az, question_ru, answer_en, answer_az, answer_ru, display_order) values
+
+('How do I enroll in a course?',
+ 'Kursa necə qeydiyyatdan keçə bilərəm?',
+ 'Как записаться на курс?',
+ 'Find the course you''re interested in, open its page, and fill out the application form. An advisor will contact you to confirm details and arrange payment.',
+ 'Maraqlandığınız kursu tapın, onun səhifəsini açın və müraciət formasını doldurun. Məsləhətçimiz təfərrüatları təsdiqləmək və ödənişi təşkil etmək üçün sizinlə əlaqə saxlayacaq.',
+ 'Найдите интересующий вас курс, откройте его страницу и заполните форму заявки. Консультант свяжется с вами для уточнения деталей и оформления оплаты.',
+ 0),
+
+('What payment methods do you accept?',
+ 'Hansı ödəniş üsullarını qəbul edirsiniz?',
+ 'Какие способы оплаты вы принимаете?',
+ 'We accept bank transfer and in-person payment at our Baku office. Your advisor will walk you through the options when you apply.',
+ 'Bank köçürməsi və Bakıdakı ofisimizdə şəxsən ödənişi qəbul edirik. Müraciət etdikdə məsləhətçiniz sizə seçimləri izah edəcək.',
+ 'Мы принимаем банковский перевод и оплату лично в нашем офисе в Баку. Консультант расскажет о доступных вариантах при подаче заявки.',
+ 1),
+
+('Are classes held online or in person?',
+ 'Dərslər onlayn, yoxsa şəxsən keçirilir?',
+ 'Занятия проходят онлайн или очно?',
+ 'Most of our courses are taught in person at our Baku center, with some courses offering an online option. Check the individual course page or ask your advisor for the format of a specific course.',
+ 'Kurslarımızın əksəriyyəti Bakıdakı mərkəzimizdə şəxsən tədris olunur, bəzi kurslar onlayn seçim təklif edir. Konkret kursun formatı üçün kursun səhifəsinə baxın və ya məsləhətçinizdən soruşun.',
+ 'Большинство наших курсов проводятся очно в нашем центре в Баку, некоторые курсы предлагают онлайн-формат. Уточните формат конкретного курса на его странице или у консультанта.',
+ 2),
+
+('Do I get a certificate after finishing a course?',
+ 'Kursu bitirdikdən sonra sertifikat alıram?',
+ 'Получу ли я сертификат после завершения курса?',
+ 'Yes. Every graduate receives a certificate of completion with a unique certificate number that can be verified on our website at any time.',
+ 'Bəli. Hər məzun unikal sertifikat nömrəsi olan bitirmə sertifikatı alır, bu nömrə istənilən vaxt veb-saytımızda yoxlanıla bilər.',
+ 'Да. Каждый выпускник получает сертификат об окончании с уникальным номером, который можно проверить на нашем сайте в любое время.',
+ 3),
+
+('What if I miss a class?',
+ 'Dərsi qaçırsam nə olar?',
+ 'Что если я пропущу занятие?',
+ 'Let your instructor know in advance if possible. Depending on the course, materials or a short recap may be available to help you catch up.',
+ 'Mümkünsə müəlliminizə əvvəlcədən xəbər verin. Kursdan asılı olaraq, sizə kömək etmək üçün materiallar və ya qısa təkrar mövcud ola bilər.',
+ 'Если возможно, сообщите преподавателю заранее. В зависимости от курса могут быть доступны материалы или краткое повторение, чтобы вы могли наверстать.',
+ 4),
+
+('Can I switch courses after enrolling?',
+ 'Qeydiyyatdan keçdikdən sonra kursu dəyişə bilərəmmi?',
+ 'Можно ли поменять курс после записи?',
+ 'In most cases, yes — talk to your advisor as early as possible so we can help you move into a better-fitting course or upcoming cohort.',
+ 'Əksər hallarda bəli — daha uyğun kursa və ya yaxınlaşan qrupa keçməyinizə kömək edə bilməyimiz üçün mümkün qədər tez məsləhətçinizlə danışın.',
+ 'В большинстве случаев да — обратитесь к консультанту как можно раньше, чтобы мы помогли вам перейти на более подходящий курс или ближайшую группу.',
+ 5),
+
+('How big are the class groups?',
+ 'Qrup ölçüləri necədir?',
+ 'Какой размер групп?',
+ 'We keep groups small intentionally, so instructors can give real attention to each student rather than lecturing to a crowd.',
+ 'Müəllimlərin kütləyə mühazirə oxumaq əvəzinə hər tələbəyə real diqqət göstərə bilməsi üçün qrupları qəsdən kiçik saxlayırıq.',
+ 'Мы намеренно держим группы небольшими, чтобы преподаватели могли уделять реальное внимание каждому студенту, а не читать лекцию толпе.',
+ 6),
+
+('Do you offer any discounts?',
+ 'Hər hansı endirim təklif edirsiniz?',
+ 'Предоставляете ли вы скидки?',
+ 'We occasionally run promotions for specific cohorts. Talk to an advisor to find out what''s currently available.',
+ 'Müəyyən qruplar üçün vaxtaşırı aksiyalar keçiririk. Hazırda nəyin mövcud olduğunu bilmək üçün məsləhətçi ilə danışın.',
+ 'Иногда мы проводим акции для определённых групп. Узнайте у консультанта, что доступно в данный момент.',
+ 7);
