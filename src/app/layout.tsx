@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Fraunces, Inter } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
+import PageTransition from "@/components/PageTransition";
 import "./globals.css";
 
 const fraunces = Fraunces({
@@ -42,7 +43,7 @@ export default function RootLayout({
       className={`${fraunces.variable} ${inter.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-[#0B1026] text-[#F5F3EE]">
-        {children}
+        <PageTransition>{children}</PageTransition>
         <Analytics />
       </body>
     </html>
