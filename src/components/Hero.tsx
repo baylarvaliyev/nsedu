@@ -45,7 +45,7 @@ export default function Hero({
       </svg>
 
       <div className="hidden md:block absolute inset-0 pointer-events-none">
-        <AscentScene />
+        <AscentScene ready={ready} />
       </div>
 
       <div className="relative z-10 max-w-3xl px-6 text-center">

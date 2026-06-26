@@ -36,9 +36,56 @@ function buildTrails(): Trail[] {
 }
 
 const NORTH_STAR_POS = new THREE.Vector3(0, 3.2, -1);
+const DUST_COUNT = 120;
+
+// Atmospheric dust field — faint, slow-drifting points scattered through
+// the scene's depth for a sense of volume, rendered as a single Points
+// object so it's one draw call regardless of count.
+function DustField() {
+  const pointsRef = useRef<THREE.Points>(null);
+
+  const { positions, seeds } = useMemo(() => {
+    const pos = new Float32Array(DUST_COUNT * 3);
+    const sd = new Float32Array(DUST_COUNT);
+    for (let i = 0; i < DUST_COUNT; i++) {
+      pos[i * 3] = (seededRandom(i * 13.1) - 0.5) * 10;
+      pos[i * 3 + 1] = (seededRandom(i * 27.3) - 0.5) * 8;
+      pos[i * 3 + 2] = (seededRandom(i * 41.7) - 0.5) * 6 - 1;
+      sd[i] = seededRandom(i * 9.3);
+    }
+    return { positions: pos, seeds: sd };
+  }, []);
+
+  const geometry = useMemo(() => {
+    const g = new THREE.BufferGeometry();
+    g.setAttribute("position", new THREE.BufferAttribute(positions.slice(), 3));
+    return g;
+  }, [positions]);
+
+  useFrame(({ clock }) => {
+    if (!pointsRef.current) return;
+    const posAttr = pointsRef.current.geometry.attributes.position as THREE.BufferAttribute;
+    const t = clock.elapsedTime;
+    for (let i = 0; i < DUST_COUNT; i++) {
+      // Very slow vertical drift, wrapping around, plus a tiny sideways sway.
+      const drift = ((t * 0.05 + seeds[i] * 8) % 8) - 4;
+      posAttr.array[i * 3 + 1] = drift;
+      posAttr.array[i * 3] = positions[i * 3] + Math.sin(t * 0.2 + seeds[i] * 10) * 0.1;
+    }
+    posAttr.needsUpdate = true;
+  });
+
+  return (
+    // eslint-disable-next-line react/no-unknown-property
+    <points ref={pointsRef} geometry={geometry}>
+      <pointsMaterial color="#8A93B8" size={0.018} transparent opacity={0.35} sizeAttenuation />
+    </points>
+  );
+}
 
 function LightTrail({ trail, clockRef }: { trail: Trail; clockRef: { current: number } }) {
   const headRef = useRef<THREE.Mesh>(null);
+  const pulseRef = useRef<THREE.Mesh>(null);
 
   const geometry = useMemo(() => new THREE.BufferGeometry(), []);
   const material = useMemo(
@@ -80,8 +127,34 @@ function LightTrail({ trail, clockRef }: { trail: Trail; clockRef: { current: nu
     }
 
     geometry.setFromPoints(points);
+
+    // Graceful fade: converging trails dim as they approach the North Star
+    // (rather than abruptly vanishing), ambient trails dim near the top of
+    // frame as they exit view.
+    const headPoint = points[points.length - 1];
+    const distToStar = trail.converges ? headPoint.distanceTo(NORTH_STAR_POS) : 1;
+    const nearStarFade = trail.converges
+      ? THREE.MathUtils.clamp(distToStar / 0.6, 0, 1)
+      : THREE.MathUtils.clamp((4 - headPoint.y) / 1.5, 0, 1);
+    material.opacity = trail.brightness * nearStarFade;
+
     if (headRef.current) {
-      headRef.current.position.copy(points[points.length - 1]);
+      headRef.current.position.copy(headPoint);
+      (headRef.current.material as THREE.MeshBasicMaterial).opacity =
+        trail.brightness * nearStarFade;
+    }
+
+    // Traveling pulse: a brighter point that runs along converging trails
+    // toward the North Star, repeating every cycle — suggests energy
+    // flowing upward rather than just static rising lines.
+    if (trail.converges && pulseRef.current) {
+      const pulseT = (t / 8 + 0.3) % 1; // offset so it doesn't start at the base
+      const idx = Math.min(Math.floor(pulseT * segments), points.length - 1);
+      pulseRef.current.position.copy(points[idx]);
+      const pulseVisible = pulseT > 0.05 && pulseT < 0.95;
+      (pulseRef.current.material as THREE.MeshBasicMaterial).opacity = pulseVisible
+        ? 0.9 * nearStarFade
+        : 0;
     }
   });
 
@@ -91,59 +164,113 @@ function LightTrail({ trail, clockRef }: { trail: Trail; clockRef: { current: nu
       <primitive object={line} />
       <mesh ref={headRef}>
         <sphereGeometry args={[0.025, 8, 8]} />
-        <meshBasicMaterial color={trail.converges ? "#F2C14E" : "#8A93B8"} />
+        <meshBasicMaterial
+          color={trail.converges ? "#F2C14E" : "#8A93B8"}
+          transparent
+        />
       </mesh>
+      {trail.converges && (
+        <mesh ref={pulseRef}>
+          <sphereGeometry args={[0.05, 8, 8]} />
+          <meshBasicMaterial color="#FFE8B0" transparent />
+        </mesh>
+      )}
     </>
   );
 }
 
-function NorthStarPoint({ clockRef }: { clockRef: { current: number } }) {
+function NorthStarPoint({
+  clockRef,
+  flareRef,
+}: {
+  clockRef: { current: number };
+  flareRef: { current: number };
+}) {
   const meshRef = useRef<THREE.Mesh>(null);
+  const haloRef = useRef<THREE.Mesh>(null);
+  const lightRef = useRef<THREE.PointLight>(null);
 
   useFrame(() => {
     const elapsed = clockRef.current;
+    const fadeIn = Math.min(elapsed / 3, 1);
+    const pulse = 1 + Math.sin(elapsed * 1.5) * 0.08;
+    // flareRef ramps from 0 to 1 once the headline becomes ready (see
+    // Scene/AscentScene), giving the convergence point one extra moment
+    // of brightness tied to the actual content appearing, not a timer.
+    const flare = flareRef.current;
+    const flareBoost = 1 + flare * 0.6;
+
     if (meshRef.current) {
-      // Gentle pulse, and fades in over the first few seconds rather than
-      // popping in instantly.
-      const fadeIn = Math.min(elapsed / 3, 1);
-      const pulse = 1 + Math.sin(elapsed * 1.5) * 0.08;
-      meshRef.current.scale.setScalar(pulse * fadeIn);
+      meshRef.current.scale.setScalar(pulse * fadeIn * flareBoost);
+    }
+    if (haloRef.current) {
+      const haloPulse = 1 + Math.sin(elapsed * 1.5) * 0.15;
+      haloRef.current.scale.setScalar(haloPulse * fadeIn * (1 + flare * 0.9));
+      (haloRef.current.material as THREE.MeshBasicMaterial).opacity =
+        0.25 * fadeIn + flare * 0.25;
+    }
+    if (lightRef.current) {
+      lightRef.current.intensity = (1.2 + flare * 1.5) * fadeIn;
     }
   });
 
   return (
     <group position={NORTH_STAR_POS}>
+      {/* Soft glow halo behind the core point — makes it read as an actual
+          light source rather than a flat dot. */}
+      <mesh ref={haloRef}>
+        <sphereGeometry args={[0.28, 16, 16]} />
+        <meshBasicMaterial color="#F2C14E" transparent opacity={0.2} depthWrite={false} />
+      </mesh>
       <mesh ref={meshRef}>
         <sphereGeometry args={[0.09, 16, 16]} />
         <meshBasicMaterial color="#F2C14E" />
       </mesh>
-      <pointLight color="#F2C14E" intensity={1.2} distance={3} />
+      <pointLight ref={lightRef} color="#F2C14E" intensity={1.2} distance={3} />
     </group>
   );
 }
 
-function Scene() {
+function Scene({ ready }: { ready: boolean }) {
   const trails = useMemo(() => buildTrails(), []);
   const startTime = useRef<number | null>(null);
   const clockRef = useRef(0);
+  const flareRef = useRef(0);
+  const flareStart = useRef<number | null>(null);
 
   useFrame(() => {
     if (startTime.current === null) startTime.current = performance.now();
     clockRef.current = (performance.now() - startTime.current) / 1000;
+
+    // Once "ready" flips true (headline content appearing), ramp the flare
+    // up over ~1.5s and back down over the following ~2s — a brief flare
+    // tied to the actual content moment rather than an independent timer.
+    if (ready) {
+      if (flareStart.current === null) flareStart.current = clockRef.current;
+      const flareElapsed = clockRef.current - flareStart.current;
+      if (flareElapsed < 1.5) {
+        flareRef.current = flareElapsed / 1.5;
+      } else if (flareElapsed < 3.5) {
+        flareRef.current = 1 - (flareElapsed - 1.5) / 2;
+      } else {
+        flareRef.current = 0;
+      }
+    }
   });
 
   return (
     <>
       <ambientLight intensity={0.3} />
+      <DustField />
       {trails.map((trail, i) => (
         <LightTrail key={i} trail={trail} clockRef={clockRef} />
       ))}
-      <NorthStarPoint clockRef={clockRef} />
+      <NorthStarPoint clockRef={clockRef} flareRef={flareRef} />
     </>
   );
 }
 
-export default function AscentScene() {
+export default function AscentScene({ ready = true }: { ready?: boolean }) {
   const [shouldRender, setShouldRender] = useState(false);
 
   useEffect(() => {
@@ -162,7 +289,7 @@ export default function AscentScene() {
         dpr={[1, 1.5]}
         gl={{ antialias: true, alpha: true }}
       >
-        <Scene />
+        <Scene ready={ready} />
       </Canvas>
     </div>
   );
