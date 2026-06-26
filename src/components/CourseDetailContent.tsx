@@ -52,6 +52,15 @@ export default async function CourseDetailContent({
               {title}
             </h1>
 
+            {course.cover_image_url && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={course.cover_image_url}
+                alt={title}
+                className="w-full rounded-2xl mb-8 object-cover max-h-80"
+              />
+            )}
+
             {description && (
               <p className="font-body text-lg text-[#F5F3EE]/90 leading-relaxed mb-6">
                 {description}

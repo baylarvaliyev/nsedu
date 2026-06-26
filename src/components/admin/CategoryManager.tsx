@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Trash2 } from "lucide-react";
+import ImageUpload from "./ImageUpload";
 
 type Category = {
   id: string;
@@ -12,6 +13,7 @@ type Category = {
   name_en: string;
   name_ru: string;
   display_order: number;
+  cover_image_url: string | null;
 };
 
 function sanitizeSlug(input: string): string {
@@ -89,6 +91,12 @@ export default function CategoryManager({
     router.refresh();
   }
 
+  async function updateCategoryImage(id: string, url: string | null) {
+    const supabase = createClient();
+    await supabase.from("categories").update({ cover_image_url: url }).eq("id", id);
+    router.refresh();
+  }
+
   const inputClass =
     "w-full rounded-lg border border-[#ddd] px-3 py-2 font-body text-sm text-[#0B1026] focus:outline-none focus:border-[#0B1026]/40";
 
@@ -140,19 +148,24 @@ export default function CategoryManager({
           {initialCategories.map((cat) => (
             <div
               key={cat.id}
-              className="flex items-center justify-between px-5 py-3 border-b border-[#f0eee8] last:border-0"
+              className="flex items-start justify-between px-5 py-4 border-b border-[#f0eee8] last:border-0 gap-4"
             >
-              <div>
+              <div className="flex-1">
                 <p className="font-body text-sm text-[#0B1026]">
                   {cat.name_en}
                 </p>
-                <p className="font-body text-xs text-[#888]">
+                <p className="font-body text-xs text-[#888] mb-3">
                   {cat.name_az} · {cat.name_ru}
                 </p>
+                <ImageUpload
+                  value={cat.cover_image_url}
+                  onChange={(url) => updateCategoryImage(cat.id, url)}
+                  folder="categories"
+                />
               </div>
               <button
                 onClick={() => handleDelete(cat.id)}
-                className="text-red-600 hover:text-red-700"
+                className="text-red-600 hover:text-red-700 shrink-0"
                 aria-label="Delete category"
               >
                 <Trash2 size={16} />

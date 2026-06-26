@@ -25,6 +25,7 @@ export type Category = {
   name_az: string;
   name_en: string;
   name_ru: string;
+  cover_image_url: string | null;
 };
 
 export default async function CourseCatalog({
@@ -44,7 +45,7 @@ export default async function CourseCatalog({
       .order("start_date", { ascending: true }),
     supabase
       .from("categories")
-      .select("id, slug, name_az, name_en, name_ru")
+      .select("id, slug, name_az, name_en, name_ru, cover_image_url")
       .order("display_order", { ascending: true }),
   ]);
 

@@ -44,6 +44,7 @@ export default async function EditCoursePage({
           start_date: course.start_date ?? "",
           duration_weeks: course.duration_weeks?.toString() ?? "",
           is_published: course.is_published ?? false,
+          cover_image_url: course.cover_image_url ?? null,
         }}
       />
     </div>

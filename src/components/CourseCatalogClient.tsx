@@ -144,14 +144,24 @@ export default function CourseCatalogClient({
                       <button
                         key={cat.id}
                         onClick={() => selectCategory(cat.slug)}
-                        className="group text-left rounded-2xl border border-[#8A93B8]/15 bg-[#0f1530] p-6 hover:border-[#F2C14E]/40 transition-colors"
+                        className="group text-left rounded-2xl border border-[#8A93B8]/15 bg-[#0f1530] overflow-hidden hover:border-[#F2C14E]/40 transition-colors"
                       >
-                        <h3 className="font-display text-xl text-[#F5F3EE] group-hover:text-[#F2C14E] transition-colors mb-2">
-                          {localized(cat, "name", locale)}
-                        </h3>
-                        <p className="font-body text-sm text-[#8A93B8]">
-                          {count} {count === 1 ? t.course_singular : t.course_plural}
-                        </p>
+                        {cat.cover_image_url && (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={cat.cover_image_url}
+                            alt=""
+                            className="w-full h-36 object-cover"
+                          />
+                        )}
+                        <div className="p-6">
+                          <h3 className="font-display text-xl text-[#F5F3EE] group-hover:text-[#F2C14E] transition-colors mb-2">
+                            {localized(cat, "name", locale)}
+                          </h3>
+                          <p className="font-body text-sm text-[#8A93B8]">
+                            {count} {count === 1 ? t.course_singular : t.course_plural}
+                          </p>
+                        </div>
                       </button>
                     );
                   })}
@@ -193,31 +203,41 @@ export default function CourseCatalogClient({
                     <a
                       key={course.id}
                       href={localizedPath(`/courses/${course.slug}`, locale)}
-                      className="group rounded-2xl border border-[#8A93B8]/15 bg-[#0f1530] p-6 hover:border-[#F2C14E]/40 transition-colors flex flex-col"
+                      className="group rounded-2xl border border-[#8A93B8]/15 bg-[#0f1530] overflow-hidden hover:border-[#F2C14E]/40 transition-colors flex flex-col"
                     >
-                      <h3 className="font-display text-xl text-[#F5F3EE] mb-2">
-                        {title}
-                      </h3>
-                      {description && (
-                        <p className="font-body text-sm text-[#8A93B8] mb-4 line-clamp-3">
-                          {description}
-                        </p>
+                      {course.cover_image_url && (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={course.cover_image_url}
+                          alt=""
+                          className="w-full h-36 object-cover"
+                        />
                       )}
-                      <div className="mt-auto flex items-center justify-between pt-4 border-t border-[#8A93B8]/10">
-                        {course.price_amount && (
-                          <span className="font-body text-sm font-semibold text-[#F2C14E]">
-                            {course.price_amount} {course.price_currency}
-                          </span>
+                      <div className="p-6 flex flex-col flex-1">
+                        <h3 className="font-display text-xl text-[#F5F3EE] mb-2">
+                          {title}
+                        </h3>
+                        {description && (
+                          <p className="font-body text-sm text-[#8A93B8] mb-4 line-clamp-3">
+                            {description}
+                          </p>
                         )}
-                        {course.start_date && (
-                          <span className="font-body text-xs text-[#8A93B8]">
-                            {t.starts}{" "}
-                            {new Date(course.start_date).toLocaleDateString(
-                              locale === "ru" ? "ru-RU" : locale === "az" ? "az-AZ" : "en-GB",
-                              { day: "numeric", month: "short" }
-                            )}
-                          </span>
-                        )}
+                        <div className="mt-auto flex items-center justify-between pt-4 border-t border-[#8A93B8]/10">
+                          {course.price_amount && (
+                            <span className="font-body text-sm font-semibold text-[#F2C14E]">
+                              {course.price_amount} {course.price_currency}
+                            </span>
+                          )}
+                          {course.start_date && (
+                            <span className="font-body text-xs text-[#8A93B8]">
+                              {t.starts}{" "}
+                              {new Date(course.start_date).toLocaleDateString(
+                                locale === "ru" ? "ru-RU" : locale === "az" ? "az-AZ" : "en-GB",
+                                { day: "numeric", month: "short" }
+                              )}
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </a>
                   );

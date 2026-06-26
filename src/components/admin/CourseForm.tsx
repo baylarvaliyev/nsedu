@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import ImageUpload from "./ImageUpload";
 
 type Category = { id: string; name_en: string };
 
@@ -44,6 +45,7 @@ export type CourseFormValues = {
   start_date: string;
   duration_weeks: string;
   is_published: boolean;
+  cover_image_url: string | null;
 };
 
 const EMPTY: CourseFormValues = {
@@ -63,6 +65,7 @@ const EMPTY: CourseFormValues = {
   start_date: "",
   duration_weeks: "",
   is_published: false,
+  cover_image_url: null,
 };
 
 // Converts arbitrary input into a URL-safe slug: lowercase, hyphens only,
@@ -135,6 +138,7 @@ export default function CourseForm({
         ? Number(values.duration_weeks)
         : null,
       is_published: values.is_published,
+      cover_image_url: values.cover_image_url,
     };
 
 
@@ -202,6 +206,15 @@ export default function CourseForm({
             />
           </Field>
         </div>
+      </div>
+
+      <div className="bg-white rounded-xl border border-[#e5e3dc] p-6 mb-6">
+        <h2 className="font-display text-lg text-[#0B1026] mb-4">Cover image</h2>
+        <ImageUpload
+          value={values.cover_image_url}
+          onChange={(url) => update("cover_image_url", url)}
+          folder="courses"
+        />
       </div>
 
       <div className="bg-white rounded-xl border border-[#e5e3dc] p-6 mb-6">
