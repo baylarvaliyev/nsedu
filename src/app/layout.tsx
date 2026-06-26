@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Fraunces, Inter } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 const fraunces = Fraunces({
@@ -17,7 +18,7 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "North Star Academy — Find Your Direction",
   description:
-    "Data science, analytics, and language bootcamps in Baku. Practical skills, real direction.",
+    "Practical courses in data analytics, languages, and professional skills in Baku. Education that turns knowledge into real results.",
 };
 
 export default function RootLayout({
@@ -32,6 +33,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-[#0B1026] text-[#F5F3EE]">
         {children}
+        <Analytics />
       </body>
     </html>
   );
