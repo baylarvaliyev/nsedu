@@ -6,6 +6,7 @@ import type { Locale } from "@/lib/locale";
 import { localizedPath } from "@/lib/locale";
 import { UI_STRINGS } from "@/lib/uiStrings";
 import LanguageSwitcher from "./LanguageSwitcher";
+import GlobeScene from "./GlobeScene";
 
 const AMBIENT_STARS = generateOrganicStars(90);
 
@@ -42,6 +43,10 @@ export default function Hero({
           />
         ))}
       </svg>
+
+      <div className="hidden md:block absolute right-[-8%] top-1/2 -translate-y-1/2 w-[55%] h-[70%] opacity-80 pointer-events-none">
+        <GlobeScene />
+      </div>
 
       <div className="relative z-10 max-w-3xl px-6 text-center">
         <motion.p
