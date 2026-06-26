@@ -4,7 +4,18 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import EnrollmentForm from "@/components/EnrollmentForm";
 import type { Locale } from "@/lib/locale";
-import { localized } from "@/lib/locale";
+import { localized, daysUntil } from "@/lib/locale";
+
+const STARTS_SOON_DAYS = 14;
+
+function startsSoonLabel(days: number, locale: Locale): string {
+  if (days === 0) {
+    return locale === "az" ? "Bu gün başlayır" : locale === "ru" ? "Старт сегодня" : "Starts today";
+  }
+  if (locale === "az") return `${days} gün sonra başlayır`;
+  if (locale === "ru") return `Старт через ${days} ${days === 1 ? "день" : "дней"}`;
+  return `Starts in ${days} ${days === 1 ? "day" : "days"}`;
+}
 
 const COURSE_STRINGS = {
   en: { eyebrow: "Course", learn: "What you'll learn", price: "Price", starts: "Starts", duration: "Duration", weeks: "weeks" },
@@ -38,6 +49,8 @@ export default async function CourseDetailContent({
   const description = localized(course, "description", locale);
   const longDescription = localized(course, "long_description", locale);
   const syllabus = localized(course, "syllabus", locale);
+  const days = daysUntil(course.start_date);
+  const showsStartsSoon = days !== null && days <= STARTS_SOON_DAYS;
 
   return (
     <>
@@ -48,6 +61,11 @@ export default async function CourseDetailContent({
             <p className="font-body text-xs uppercase tracking-[0.25em] text-[#8A93B8] mb-3">
               {t.eyebrow}
             </p>
+            {showsStartsSoon && (
+              <span className="inline-block mb-3 rounded-full bg-[#F2C14E] text-[#0B1026] text-xs font-body font-semibold px-3 py-1">
+                {startsSoonLabel(days!, locale)}
+              </span>
+            )}
             <h1 className="font-display text-3xl sm:text-4xl text-[#F5F3EE] mb-6">
               {title}
             </h1>

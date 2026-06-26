@@ -31,3 +31,17 @@ export const LOCALE_LABELS: Record<Locale, string> = {
   az: "AZ",
   ru: "RU",
 };
+
+// Days until a course start date. Returns null for past/missing dates so
+// callers can decide whether to show an urgency badge at all — never shows
+// a fabricated countdown for something that already started.
+export function daysUntil(dateString: string | null): number | null {
+  if (!dateString) return null;
+  const target = new Date(dateString);
+  target.setHours(0, 0, 0, 0);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const diffMs = target.getTime() - today.getTime();
+  const days = Math.round(diffMs / (1000 * 60 * 60 * 24));
+  return days >= 0 ? days : null;
+}

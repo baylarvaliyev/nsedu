@@ -5,7 +5,18 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import type { Course, Category } from "./CourseCatalog";
 import type { Locale } from "@/lib/locale";
-import { localized, localizedPath } from "@/lib/locale";
+import { localized, localizedPath, daysUntil } from "@/lib/locale";
+
+const STARTS_SOON_DAYS = 14;
+
+function startsSoonLabel(days: number, locale: Locale): string {
+  if (days === 0) {
+    return locale === "az" ? "Bu gün başlayır" : locale === "ru" ? "Старт сегодня" : "Starts today";
+  }
+  if (locale === "az") return `${days} gün sonra başlayır`;
+  if (locale === "ru") return `Старт через ${days} ${days === 1 ? "день" : "дней"}`;
+  return `Starts in ${days} ${days === 1 ? "day" : "days"}`;
+}
 
 const CATALOG_STRINGS = {
   en: {
@@ -199,12 +210,19 @@ export default function CourseCatalogClient({
                 {visibleCourses.map((course) => {
                   const title = localized(course, "title", locale);
                   const description = localized(course, "description", locale);
+                  const days = daysUntil(course.start_date);
+                  const showsStartsSoon = days !== null && days <= STARTS_SOON_DAYS;
                   return (
                     <a
                       key={course.id}
                       href={localizedPath(`/courses/${course.slug}`, locale)}
-                      className="group rounded-2xl border border-[#8A93B8]/15 bg-[#0f1530] overflow-hidden hover:border-[#F2C14E]/40 transition-colors flex flex-col"
+                      className="group relative rounded-2xl border border-[#8A93B8]/15 bg-[#0f1530] overflow-hidden hover:border-[#F2C14E]/40 transition-colors flex flex-col"
                     >
+                      {showsStartsSoon && (
+                        <span className="absolute top-3 right-3 z-10 rounded-full bg-[#F2C14E] text-[#0B1026] text-xs font-body font-semibold px-3 py-1">
+                          {startsSoonLabel(days!, locale)}
+                        </span>
+                      )}
                       {course.cover_image_url && (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
