@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { generateOrganicStars } from "@/lib/stars";
 import type { Locale } from "@/lib/locale";
+import AscentEcho from "./AscentEcho";
 
 const AMBIENT_STARS = generateOrganicStars(40);
 
@@ -55,6 +56,10 @@ export default function CoursesPageIntro({
           />
         ))}
       </svg>
+
+      <div className="hidden md:block absolute inset-0 pointer-events-none">
+        <AscentEcho />
+      </div>
 
       <div className="relative z-10 max-w-3xl mx-auto text-center">
         <motion.p
