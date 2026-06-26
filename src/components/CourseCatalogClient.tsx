@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import type { Course, Category } from "./CourseCatalog";
 import type { Locale } from "@/lib/locale";
@@ -149,11 +150,16 @@ export default function CourseCatalogClient({
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {categories
                   .filter((cat) => (coursesByCategory.get(cat.id) ?? []).length > 0)
-                  .map((cat) => {
+                  .map((cat, index) => {
                     const count = (coursesByCategory.get(cat.id) ?? []).length;
                     return (
-                      <button
+                      <motion.button
                         key={cat.id}
+                        initial={{ opacity: 0, y: 16 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.5, delay: Math.min(index * 0.08, 0.4) }}
+                        whileHover={{ y: -4 }}
                         onClick={() => selectCategory(cat.slug)}
                         className="group text-left rounded-2xl border border-[#8A93B8]/15 bg-[#0f1530] overflow-hidden hover:border-[#F2C14E]/40 transition-colors"
                       >
@@ -173,7 +179,7 @@ export default function CourseCatalogClient({
                             {count} {count === 1 ? t.course_singular : t.course_plural}
                           </p>
                         </div>
-                      </button>
+                      </motion.button>
                     );
                   })}
 
@@ -207,14 +213,19 @@ export default function CourseCatalogClient({
               </div>
             ) : (
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {visibleCourses.map((course) => {
+                {visibleCourses.map((course, index) => {
                   const title = localized(course, "title", locale);
                   const description = localized(course, "description", locale);
                   const days = daysUntil(course.start_date);
                   const showsStartsSoon = days !== null && days <= STARTS_SOON_DAYS;
                   return (
-                    <a
+                    <motion.a
                       key={course.id}
+                      initial={{ opacity: 0, y: 16 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.5, delay: Math.min(index * 0.06, 0.4) }}
+                      whileHover={{ y: -4 }}
                       href={localizedPath(`/courses/${course.slug}`, locale)}
                       className="group relative rounded-2xl border border-[#8A93B8]/15 bg-[#0f1530] overflow-hidden hover:border-[#F2C14E]/40 transition-colors flex flex-col"
                     >
@@ -257,7 +268,7 @@ export default function CourseCatalogClient({
                           )}
                         </div>
                       </div>
-                    </a>
+                    </motion.a>
                   );
                 })}
               </div>
