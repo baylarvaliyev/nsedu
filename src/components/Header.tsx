@@ -7,6 +7,7 @@ import type { Locale } from "@/lib/locale";
 import { localizedPath } from "@/lib/locale";
 import { UI_STRINGS } from "@/lib/uiStrings";
 import LanguageSwitcher from "./LanguageSwitcher";
+import ExitIntentPopup from "./ExitIntentPopup";
 
 export default function Header({ locale = "en" as Locale }: { locale?: Locale }) {
   const [open, setOpen] = useState(false);
@@ -20,7 +21,9 @@ export default function Header({ locale = "en" as Locale }: { locale?: Locale })
   const contactHref = `${localizedPath("/courses", locale)}#contact`;
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-40 bg-[#0b1026]/80 backdrop-blur-sm border-b border-[#8A93B8]/10">
+    <>
+      <ExitIntentPopup locale={locale} />
+      <header className="fixed top-0 left-0 right-0 z-40 bg-[#0b1026]/80 backdrop-blur-sm border-b border-[#8A93B8]/10">
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
         <a href={localizedPath("/", locale)} className="flex items-center gap-2">
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -86,5 +89,6 @@ export default function Header({ locale = "en" as Locale }: { locale?: Locale })
         </motion.nav>
       )}
     </header>
+    </>
   );
 }
