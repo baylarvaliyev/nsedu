@@ -16,9 +16,19 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "North Star Academy — Find Your Direction",
+  metadataBase: new URL("https://nsedu.co"),
+  title: {
+    default: "North Star Academy — Find Your Direction",
+    template: "%s",
+  },
   description:
     "Practical courses in data analytics, languages, and professional skills in Baku. Education that turns knowledge into real results.",
+  openGraph: {
+    siteName: "North Star Academy",
+    type: "website",
+    locale: "en_US",
+    images: [{ url: "/logo.png" }],
+  },
 };
 
 export default function RootLayout({
