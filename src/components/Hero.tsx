@@ -44,7 +44,7 @@ export default function Hero({
         ))}
       </svg>
 
-      <div className="hidden md:block absolute inset-0 pointer-events-none">
+      <div className="absolute inset-0 pointer-events-none">
         <AscentScene ready={ready} />
       </div>
 
@@ -85,7 +85,7 @@ export default function Hero({
           className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4"
         >
           <a
-            href={`${localizedPath("/courses", locale)}#courses`}
+            href={localizedPath("/courses", locale)}
             className="inline-flex items-center justify-center rounded-full bg-[#F2C14E] px-7 py-3 font-body font-semibold text-[#0B1026] hover:bg-[#f5cd6b] transition-colors"
           >
             {t.hero_cta_courses}

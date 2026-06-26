@@ -9,7 +9,8 @@ import * as THREE from "three";
 // secondary pages where full hero-level cost isn't justified, but a bit
 // of the same visual language keeps the site feeling cohesive.
 
-const TRAIL_COUNT = 18;
+const TRAIL_COUNT_FULL = 18;
+const TRAIL_COUNT_MOBILE = 8;
 
 function seededRandom(seed: number): number {
   let x = (seed * 9301 + 49297) % 233280;
@@ -19,8 +20,8 @@ function seededRandom(seed: number): number {
 
 type Trail = { startX: number; speed: number; phase: number };
 
-function buildTrails(): Trail[] {
-  return Array.from({ length: TRAIL_COUNT }, (_, i) => ({
+function buildTrails(trailCount: number): Trail[] {
+  return Array.from({ length: trailCount }, (_, i) => ({
     startX: (seededRandom(i * 12.98) - 0.5) * 7,
     speed: 0.5 + seededRandom(i * 37.7) * 0.6,
     phase: seededRandom(i * 5.1) * 8,
@@ -66,8 +67,11 @@ function Trail({ trail, clockRef }: { trail: Trail; clockRef: { current: number 
   );
 }
 
-function Scene() {
-  const trails = useMemo(() => buildTrails(), []);
+function Scene({ isMobile }: { isMobile: boolean }) {
+  const trails = useMemo(
+    () => buildTrails(isMobile ? TRAIL_COUNT_MOBILE : TRAIL_COUNT_FULL),
+    [isMobile]
+  );
   const startTime = useRef<number | null>(null);
   const clockRef = useRef(0);
 
@@ -88,20 +92,26 @@ function Scene() {
 
 export default function AscentEcho() {
   const [shouldRender, setShouldRender] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     const prefersReducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
     ).matches;
     setShouldRender(!prefersReducedMotion);
+    setIsMobile(window.innerWidth < 768);
   }, []);
 
   if (!shouldRender) return null;
 
   return (
     <div className="absolute inset-0">
-      <Canvas camera={{ position: [0, 0, 4], fov: 45 }} dpr={[1, 1.5]} gl={{ antialias: true, alpha: true }}>
-        <Scene />
+      <Canvas
+        camera={{ position: [0, 0, 4], fov: 45 }}
+        dpr={isMobile ? 1 : [1, 1.5]}
+        gl={{ antialias: !isMobile, alpha: true }}
+      >
+        <Scene isMobile={isMobile} />
       </Canvas>
     </div>
   );

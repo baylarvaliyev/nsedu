@@ -4,8 +4,10 @@ import { useRef, useMemo, useState, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 
-const TRAIL_COUNT = 60;
-const CONVERGING_COUNT = 6; // how many trails curve toward the North Star point
+const TRAIL_COUNT_FULL = 60;
+const TRAIL_COUNT_LIGHT = 18;
+const CONVERGING_COUNT_FULL = 6;
+const CONVERGING_COUNT_LIGHT = 3;
 
 // Deterministic pseudo-random (same approach as the rest of the site —
 // avoids SSR/client hydration mismatches).
@@ -24,14 +26,14 @@ type Trail = {
   brightness: number;
 };
 
-function buildTrails(): Trail[] {
-  return Array.from({ length: TRAIL_COUNT }, (_, i) => ({
+function buildTrails(trailCount: number, convergingCount: number): Trail[] {
+  return Array.from({ length: trailCount }, (_, i) => ({
     startX: (seededRandom(i * 12.9898) - 0.5) * 8,
     startZ: (seededRandom(i * 78.233) - 0.5) * 6 - 2,
     speed: 0.6 + seededRandom(i * 37.71) * 0.8,
-    converges: i < CONVERGING_COUNT,
+    converges: i < convergingCount,
     phase: seededRandom(i * 5.12) * 10,
-    brightness: i < CONVERGING_COUNT ? 1 : 0.3 + seededRandom(i * 91.7) * 0.3,
+    brightness: i < convergingCount ? 1 : 0.3 + seededRandom(i * 91.7) * 0.3,
   }));
 }
 
@@ -231,8 +233,15 @@ function NorthStarPoint({
   );
 }
 
-function Scene({ ready }: { ready: boolean }) {
-  const trails = useMemo(() => buildTrails(), []);
+function Scene({ ready, isMobile }: { ready: boolean; isMobile: boolean }) {
+  const trails = useMemo(
+    () =>
+      buildTrails(
+        isMobile ? TRAIL_COUNT_LIGHT : TRAIL_COUNT_FULL,
+        isMobile ? CONVERGING_COUNT_LIGHT : CONVERGING_COUNT_FULL
+      ),
+    [isMobile]
+  );
   const startTime = useRef<number | null>(null);
   const clockRef = useRef(0);
   const flareRef = useRef(0);
@@ -261,7 +270,7 @@ function Scene({ ready }: { ready: boolean }) {
   return (
     <>
       <ambientLight intensity={0.3} />
-      <DustField />
+      {!isMobile && <DustField />}
       {trails.map((trail, i) => (
         <LightTrail key={i} trail={trail} clockRef={clockRef} />
       ))}
@@ -272,12 +281,16 @@ function Scene({ ready }: { ready: boolean }) {
 
 export default function AscentScene({ ready = true }: { ready?: boolean }) {
   const [shouldRender, setShouldRender] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     const prefersReducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
     ).matches;
     setShouldRender(!prefersReducedMotion);
+    // Treat narrow viewports as "mobile" for scene weight purposes — a
+    // real lighter render rather than hiding the scene outright.
+    setIsMobile(window.innerWidth < 768);
   }, []);
 
   if (!shouldRender) return null;
@@ -286,10 +299,10 @@ export default function AscentScene({ ready = true }: { ready?: boolean }) {
     <div className="absolute inset-0">
       <Canvas
         camera={{ position: [0, 0, 5], fov: 50 }}
-        dpr={[1, 1.5]}
-        gl={{ antialias: true, alpha: true }}
+        dpr={isMobile ? 1 : [1, 1.5]}
+        gl={{ antialias: !isMobile, alpha: true }}
       >
-        <Scene ready={ready} />
+        <Scene ready={ready} isMobile={isMobile} />
       </Canvas>
     </div>
   );

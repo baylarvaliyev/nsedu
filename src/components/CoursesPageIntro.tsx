@@ -57,7 +57,7 @@ export default function CoursesPageIntro({
         ))}
       </svg>
 
-      <div className="hidden md:block absolute inset-0 pointer-events-none">
+      <div className="absolute inset-0 pointer-events-none">
         <AscentEcho />
       </div>
 
