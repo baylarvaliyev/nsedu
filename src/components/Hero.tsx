@@ -6,7 +6,7 @@ import type { Locale } from "@/lib/locale";
 import { localizedPath } from "@/lib/locale";
 import { UI_STRINGS } from "@/lib/uiStrings";
 import LanguageSwitcher from "./LanguageSwitcher";
-import GlobeScene from "./GlobeScene";
+import AscentScene from "./AscentScene";
 
 const AMBIENT_STARS = generateOrganicStars(90);
 
@@ -28,7 +28,7 @@ export default function Hero({
       <svg
         viewBox="0 0 100 100"
         preserveAspectRatio="xMidYMid slice"
-        className="absolute inset-0 h-[120%] w-[120%] -top-[10%] -left-[10%] animate-star-drift"
+        className="absolute inset-0 h-[120%] w-[120%] -top-[10%] -left-[10%] animate-star-drift opacity-50"
       >
         {AMBIENT_STARS.map((star, i) => (
           <circle
@@ -44,8 +44,8 @@ export default function Hero({
         ))}
       </svg>
 
-      <div className="hidden md:block absolute right-[-8%] top-1/2 -translate-y-1/2 w-[55%] h-[70%] opacity-80 pointer-events-none">
-        <GlobeScene />
+      <div className="hidden md:block absolute inset-0 pointer-events-none">
+        <AscentScene />
       </div>
 
       <div className="relative z-10 max-w-3xl px-6 text-center">
