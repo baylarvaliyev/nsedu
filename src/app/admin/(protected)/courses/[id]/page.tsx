@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import CourseForm from "@/components/admin/CourseForm";
+import CourseFaqManager from "@/components/admin/CourseFaqManager";
 import { notFound } from "next/navigation";
 
 export default async function EditCoursePage({
@@ -10,9 +11,10 @@ export default async function EditCoursePage({
   const { id } = await params;
   const supabase = await createClient();
 
-  const [{ data: categories }, { data: course }] = await Promise.all([
+  const [{ data: categories }, { data: course }, { data: faqItems }] = await Promise.all([
     supabase.from("categories").select("id, name_en").order("display_order"),
     supabase.from("courses").select("*").eq("id", id).single(),
+    supabase.from("course_faq_items").select("*").eq("course_id", id).order("display_order"),
   ]);
 
   if (!course) {
@@ -45,8 +47,21 @@ export default async function EditCoursePage({
           duration_weeks: course.duration_weeks?.toString() ?? "",
           is_published: course.is_published ?? false,
           cover_image_url: course.cover_image_url ?? null,
+          who_for_az: course.who_for_az ?? "",
+          who_for_en: course.who_for_en ?? "",
+          who_for_ru: course.who_for_ru ?? "",
         }}
       />
+
+      <div className="max-w-3xl mt-10">
+        <h2 className="font-display text-xl text-[#0B1026] mb-1">
+          Course-specific FAQ
+        </h2>
+        <p className="font-body text-sm text-[#888] mb-4">
+          Questions shown only on this course&apos;s page, in addition to the site-wide FAQ.
+        </p>
+        <CourseFaqManager courseId={course.id} initialItems={faqItems ?? []} />
+      </div>
     </div>
   );
 }

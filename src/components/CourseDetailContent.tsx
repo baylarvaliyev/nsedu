@@ -5,8 +5,9 @@ import Footer from "@/components/Footer";
 import EnrollmentForm from "@/components/EnrollmentForm";
 import SyllabusTimeline from "@/components/SyllabusTimeline";
 import RelatedCourses from "@/components/RelatedCourses";
+import CourseFaqAccordion from "@/components/CourseFaqAccordion";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Users } from "lucide-react";
 import type { Locale } from "@/lib/locale";
 import { localized, daysUntil, localizedPath } from "@/lib/locale";
 
@@ -22,9 +23,9 @@ function startsSoonLabel(days: number, locale: Locale): string {
 }
 
 const COURSE_STRINGS = {
-  en: { eyebrow: "Course", learn: "What you'll learn", price: "Price", starts: "Starts", duration: "Duration", weeks: "weeks", backTo: "Back to" },
-  az: { eyebrow: "Kurs", learn: "Nə öyrənəcəksiniz", price: "Qiymət", starts: "Başlanğıc", duration: "Müddət", weeks: "həftə", backTo: "Geri" },
-  ru: { eyebrow: "Курс", learn: "Чему вы научитесь", price: "Цена", starts: "Старт", duration: "Длительность", weeks: "недель", backTo: "Назад к" },
+  en: { eyebrow: "Course", learn: "What you'll learn", price: "Price", starts: "Starts", duration: "Duration", weeks: "weeks", backTo: "Back to", whoFor: "Who this is for" },
+  az: { eyebrow: "Kurs", learn: "Nə öyrənəcəksiniz", price: "Qiymət", starts: "Başlanğıc", duration: "Müddət", weeks: "həftə", backTo: "Geri", whoFor: "Bu kurs kimlər üçündür" },
+  ru: { eyebrow: "Курс", learn: "Чему вы научитесь", price: "Цена", starts: "Старт", duration: "Длительность", weeks: "недель", backTo: "Назад к", whoFor: "Для кого этот курс" },
 } as const;
 
 export default async function CourseDetailContent({
@@ -60,12 +61,19 @@ export default async function CourseDetailContent({
         .limit(3)
     : { data: [] };
 
+  const { data: courseFaq } = await supabase
+    .from("course_faq_items")
+    .select("*")
+    .eq("course_id", course.id)
+    .order("display_order");
+
   const t = COURSE_STRINGS[locale];
   const dateLocale = locale === "ru" ? "ru-RU" : locale === "az" ? "az-AZ" : "en-GB";
   const title = localized(course, "title", locale);
   const description = localized(course, "description", locale);
   const longDescription = localized(course, "long_description", locale);
   const syllabus = localized(course, "syllabus", locale);
+  const whoFor = localized(course, "who_for", locale);
   const days = daysUntil(course.start_date);
   const showsStartsSoon = days !== null && days <= STARTS_SOON_DAYS;
   const category = course.categories;
@@ -116,6 +124,20 @@ export default async function CourseDetailContent({
                 </p>
               )}
 
+              {whoFor && (
+                <div className="flex gap-3 rounded-2xl bg-[#F2C14E]/10 border border-[#F2C14E]/20 p-5 mb-8">
+                  <Users size={20} className="text-[#F2C14E] shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-display text-base text-[#F5F3EE] mb-1">
+                      {t.whoFor}
+                    </p>
+                    <p className="font-body text-sm text-[#8A93B8] leading-relaxed whitespace-pre-line">
+                      {whoFor}
+                    </p>
+                  </div>
+                </div>
+              )}
+
               {longDescription && (
                 <div className="rounded-2xl bg-[#0f1530] border border-[#8A93B8]/10 p-6 mb-8">
                   <p className="font-body text-base text-[#8A93B8] leading-relaxed whitespace-pre-line">
@@ -131,6 +153,10 @@ export default async function CourseDetailContent({
                   </h2>
                   <SyllabusTimeline raw={syllabus} />
                 </div>
+              )}
+
+              {courseFaq && courseFaq.length > 0 && (
+                <CourseFaqAccordion items={courseFaq} locale={locale} />
               )}
             </div>
 

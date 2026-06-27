@@ -47,6 +47,9 @@ export type CourseFormValues = {
   duration_weeks: string;
   is_published: boolean;
   cover_image_url: string | null;
+  who_for_az: string;
+  who_for_en: string;
+  who_for_ru: string;
 };
 
 const EMPTY: CourseFormValues = {
@@ -67,6 +70,9 @@ const EMPTY: CourseFormValues = {
   duration_weeks: "",
   is_published: false,
   cover_image_url: null,
+  who_for_az: "",
+  who_for_en: "",
+  who_for_ru: "",
 };
 
 // Converts arbitrary input into a URL-safe slug: lowercase, hyphens only,
@@ -140,6 +146,9 @@ export default function CourseForm({
         : null,
       is_published: values.is_published,
       cover_image_url: values.cover_image_url,
+      who_for_az: values.who_for_az.trim() || null,
+      who_for_en: values.who_for_en.trim() || null,
+      who_for_ru: values.who_for_ru.trim() || null,
     };
 
 
@@ -223,6 +232,41 @@ export default function CourseForm({
           onChange={(url) => update("cover_image_url", url)}
           folder="courses"
         />
+      </div>
+
+      <div className="bg-white rounded-xl border border-[#e5e3dc] p-6 mb-6">
+        <h2 className="font-display text-lg text-[#0B1026] mb-1">
+          Who this course is for
+        </h2>
+        <p className="font-body text-xs text-[#888] mb-4">
+          Helps the right people self-select. E.g. &quot;Beginners with no prior Excel experience&quot; or &quot;Working professionals looking to move into a finance role.&quot;
+        </p>
+        <div className="grid gap-4">
+          <Field label="Who it's for (English)">
+            <textarea
+              value={values.who_for_en}
+              onChange={(e) => update("who_for_en", e.target.value)}
+              rows={3}
+              className={inputClass}
+            />
+          </Field>
+          <Field label="Who it's for (Azərbaycan)">
+            <textarea
+              value={values.who_for_az}
+              onChange={(e) => update("who_for_az", e.target.value)}
+              rows={3}
+              className={inputClass}
+            />
+          </Field>
+          <Field label="Who it's for (Русский)">
+            <textarea
+              value={values.who_for_ru}
+              onChange={(e) => update("who_for_ru", e.target.value)}
+              rows={3}
+              className={inputClass}
+            />
+          </Field>
+        </div>
       </div>
 
       <div className="bg-white rounded-xl border border-[#e5e3dc] p-6 mb-6">
