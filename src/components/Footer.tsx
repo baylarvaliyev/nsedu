@@ -40,10 +40,13 @@ export default function Footer({ locale = "en" as Locale }: { locale?: Locale })
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-6 py-6 border-t border-[#8A93B8]/10">
+      <div className="max-w-6xl mx-auto px-6 py-6 border-t border-[#8A93B8]/10 flex flex-col sm:flex-row items-center justify-between gap-3">
         <p className="font-body text-xs text-[#8A93B8]">
           © {new Date().getFullYear()} North Star Academy. {t.footer_rights}
         </p>
+        <a href="/privacy" className="font-body text-xs text-[#8A93B8] hover:text-[#F5F3EE]">
+          {locale === "az" ? "Məxfilik Siyasəti" : locale === "ru" ? "Политика конфиденциальности" : "Privacy Policy"}
+        </a>
       </div>
     </footer>
   );

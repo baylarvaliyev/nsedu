@@ -187,10 +187,22 @@ export default function EnrollmentForm({
         <p className="font-body text-sm text-red-400 mt-3">{error}</p>
       )}
 
+      <p className="font-body text-xs text-[#8A93B8]/70 mt-3">
+        {locale === "az"
+          ? "Göndərməklə, "
+          : locale === "ru"
+          ? "Отправляя форму, вы соглашаетесь с нашей "
+          : "By submitting, you agree to our "}
+        <a href="/privacy" className="underline hover:text-[#F5F3EE]">
+          {locale === "az" ? "Məxfilik Siyasətimizlə" : locale === "ru" ? "Политикой конфиденциальности" : "Privacy Policy"}
+        </a>
+        {locale === "az" ? " razılaşırsınız." : "."}
+      </p>
+
       <button
         type="submit"
         disabled={submitting}
-        className="w-full mt-4 rounded-full bg-[#F2C14E] text-[#0B1026] font-body font-semibold text-sm py-2.5 hover:bg-[#f5cd6b] transition-colors disabled:opacity-60"
+        className="w-full mt-3 rounded-full bg-[#F2C14E] text-[#0B1026] font-body font-semibold text-sm py-2.5 hover:bg-[#f5cd6b] transition-colors disabled:opacity-60"
       >
         {submitting ? t.sending : t.submit}
       </button>
