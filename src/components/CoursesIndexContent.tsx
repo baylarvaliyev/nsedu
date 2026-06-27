@@ -4,6 +4,7 @@ import CourseCatalog from "@/components/CourseCatalog";
 import CoursesPageIntro from "@/components/CoursesPageIntro";
 import FaqSection from "@/components/FaqSection";
 import ContactSection from "@/components/ContactSection";
+import AscentEcho from "@/components/AscentEcho";
 import { createClient } from "@/lib/supabase/server";
 import type { Locale } from "@/lib/locale";
 
@@ -25,7 +26,10 @@ export default async function CoursesIndexContent({
   return (
     <>
       <Header locale={locale} />
-      <main className="flex-1">
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <AscentEcho />
+      </div>
+      <main className="relative flex-1">
         <CoursesPageIntro
           locale={locale}
           courseCount={courseCount ?? 0}
