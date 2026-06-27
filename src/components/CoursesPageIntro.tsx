@@ -33,7 +33,7 @@ export default function CoursesPageIntro({
   const t = INTRO_STRINGS[locale];
 
   return (
-    <section className="relative z-10 min-h-[70vh] pt-32 pb-16 px-6">
+    <section className="relative z-10 pt-32 pb-12 px-6">
       <div className="relative z-10 max-w-3xl mx-auto text-center">
         <motion.p
           initial={{ opacity: 0, y: 8 }}

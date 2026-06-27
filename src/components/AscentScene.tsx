@@ -85,9 +85,9 @@ function DustField() {
   );
 }
 
-function LightTrail({ trail, clockRef }: { trail: Trail; clockRef: { current: number } }) {
-  const headRef = useRef<THREE.Mesh>(null);
-  const pulseRef = useRef<THREE.Mesh>(null);
+function LightTrail({ trail, clockRef, glowTexture }: { trail: Trail; clockRef: { current: number }; glowTexture: THREE.Texture }) {
+  const headRef = useRef<THREE.Sprite>(null);
+  const pulseRef = useRef<THREE.Sprite>(null);
 
   const geometry = useMemo(() => new THREE.BufferGeometry(), []);
   const material = useMemo(
@@ -95,7 +95,7 @@ function LightTrail({ trail, clockRef }: { trail: Trail; clockRef: { current: nu
       new THREE.LineBasicMaterial({
         color: trail.converges ? "#F2C14E" : "#8A93B8",
         transparent: true,
-        opacity: trail.brightness,
+        opacity: trail.brightness * 0.7,
       }),
     [trail]
   );
@@ -104,11 +104,14 @@ function LightTrail({ trail, clockRef }: { trail: Trail; clockRef: { current: nu
   useFrame(() => {
     const elapsed = clockRef.current;
     const t = (elapsed * trail.speed + trail.phase) % 8;
-    const segments = 24;
+    // More segments = smoother curve, less "blocky/polygonal" look on the
+    // converging trails' bend toward the North Star. Step is halved to
+    // compensate so total trail length/timing stays the same as before.
+    const segments = 48;
     const points: THREE.Vector3[] = [];
 
     for (let s = 0; s <= segments; s++) {
-      const segT = Math.max(0, t - s * 0.04);
+      const segT = Math.max(0, t - s * 0.02);
       const riseY = -4 + segT * 1.6;
 
       let x = trail.startX;
@@ -142,7 +145,7 @@ function LightTrail({ trail, clockRef }: { trail: Trail; clockRef: { current: nu
 
     if (headRef.current) {
       headRef.current.position.copy(headPoint);
-      (headRef.current.material as THREE.MeshBasicMaterial).opacity =
+      (headRef.current.material as THREE.SpriteMaterial).opacity =
         trail.brightness * nearStarFade;
     }
 
@@ -154,28 +157,40 @@ function LightTrail({ trail, clockRef }: { trail: Trail; clockRef: { current: nu
       const idx = Math.min(Math.floor(pulseT * segments), points.length - 1);
       pulseRef.current.position.copy(points[idx]);
       const pulseVisible = pulseT > 0.05 && pulseT < 0.95;
-      (pulseRef.current.material as THREE.MeshBasicMaterial).opacity = pulseVisible
+      (pulseRef.current.material as THREE.SpriteMaterial).opacity = pulseVisible
         ? 0.9 * nearStarFade
         : 0;
     }
   });
 
+  const headMaterial = useMemo(
+    () =>
+      new THREE.SpriteMaterial({
+        map: glowTexture,
+        color: trail.converges ? "#F2C14E" : "#8A93B8",
+        transparent: true,
+        depthWrite: false,
+      }),
+    [glowTexture, trail.converges]
+  );
+  const pulseMaterial = useMemo(
+    () =>
+      new THREE.SpriteMaterial({
+        map: glowTexture,
+        color: "#FFE8B0",
+        transparent: true,
+        depthWrite: false,
+      }),
+    [glowTexture]
+  );
+
   return (
     <>
       {/* eslint-disable-next-line react/no-unknown-property */}
       <primitive object={line} />
-      <mesh ref={headRef}>
-        <sphereGeometry args={[0.025, 8, 8]} />
-        <meshBasicMaterial
-          color={trail.converges ? "#F2C14E" : "#8A93B8"}
-          transparent
-        />
-      </mesh>
+      <sprite ref={headRef} material={headMaterial} scale={[0.16, 0.16, 0.16]} />
       {trail.converges && (
-        <mesh ref={pulseRef}>
-          <sphereGeometry args={[0.05, 8, 8]} />
-          <meshBasicMaterial color="#FFE8B0" transparent />
-        </mesh>
+        <sprite ref={pulseRef} material={pulseMaterial} scale={[0.3, 0.3, 0.3]} />
       )}
     </>
   );
@@ -184,13 +199,25 @@ function LightTrail({ trail, clockRef }: { trail: Trail; clockRef: { current: nu
 function NorthStarPoint({
   clockRef,
   flareRef,
+  glowTexture,
 }: {
   clockRef: { current: number };
   flareRef: { current: number };
+  glowTexture: THREE.Texture;
 }) {
-  const meshRef = useRef<THREE.Mesh>(null);
+  const meshRef = useRef<THREE.Sprite>(null);
   const haloRef = useRef<THREE.Mesh>(null);
   const lightRef = useRef<THREE.PointLight>(null);
+  const coreMaterial = useMemo(
+    () =>
+      new THREE.SpriteMaterial({
+        map: glowTexture,
+        color: "#F2C14E",
+        transparent: true,
+        depthWrite: false,
+      }),
+    [glowTexture]
+  );
 
   useFrame(() => {
     const elapsed = clockRef.current;
@@ -224,10 +251,7 @@ function NorthStarPoint({
         <sphereGeometry args={[0.28, 16, 16]} />
         <meshBasicMaterial color="#F2C14E" transparent opacity={0.2} depthWrite={false} />
       </mesh>
-      <mesh ref={meshRef}>
-        <sphereGeometry args={[0.09, 16, 16]} />
-        <meshBasicMaterial color="#F2C14E" />
-      </mesh>
+      <sprite ref={meshRef} material={coreMaterial} scale={[0.32, 0.32, 0.32]} />
       <pointLight ref={lightRef} color="#F2C14E" intensity={1.2} distance={3} />
     </group>
   );
@@ -242,6 +266,7 @@ function Scene({ ready, isMobile }: { ready: boolean; isMobile: boolean }) {
       ),
     [isMobile]
   );
+  const glowTexture = useGlowTexture();
   const startTime = useRef<number | null>(null);
   const clockRef = useRef(0);
   const flareRef = useRef(0);
@@ -272,9 +297,9 @@ function Scene({ ready, isMobile }: { ready: boolean; isMobile: boolean }) {
       <ambientLight intensity={0.3} />
       {!isMobile && <DustField />}
       {trails.map((trail, i) => (
-        <LightTrail key={i} trail={trail} clockRef={clockRef} />
+        <LightTrail key={i} trail={trail} clockRef={clockRef} glowTexture={glowTexture} />
       ))}
-      <NorthStarPoint clockRef={clockRef} flareRef={flareRef} />
+      <NorthStarPoint clockRef={clockRef} flareRef={flareRef} glowTexture={glowTexture} />
     </>
   );
 }
@@ -306,4 +331,34 @@ export default function AscentScene({ ready = true }: { ready?: boolean }) {
       </Canvas>
     </div>
   );
+}
+
+// A soft, radially-faded circular texture used for glowing points (head
+// dots, North Star, pulse) instead of geometric spheres — spheres read as
+// hard-edged and blocky at small screen sizes; a glow sprite reads as a
+// genuine soft light source.
+function useGlowTexture() {
+  return useMemo(() => {
+    const size = 128;
+    const canvas = document.createElement("canvas");
+    canvas.width = size;
+    canvas.height = size;
+    const ctx = canvas.getContext("2d")!;
+    const gradient = ctx.createRadialGradient(
+      size / 2,
+      size / 2,
+      0,
+      size / 2,
+      size / 2,
+      size / 2
+    );
+    gradient.addColorStop(0, "rgba(255,255,255,1)");
+    gradient.addColorStop(0.4, "rgba(255,255,255,0.6)");
+    gradient.addColorStop(1, "rgba(255,255,255,0)");
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, size, size);
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.needsUpdate = true;
+    return texture;
+  }, []);
 }
