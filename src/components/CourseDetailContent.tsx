@@ -6,6 +6,7 @@ import EnrollmentForm from "@/components/EnrollmentForm";
 import SyllabusTimeline from "@/components/SyllabusTimeline";
 import RelatedCourses from "@/components/RelatedCourses";
 import CourseFaqAccordion from "@/components/CourseFaqAccordion";
+import AscentEcho from "@/components/AscentEcho";
 import Link from "next/link";
 import { ArrowLeft, Users } from "lucide-react";
 import type { Locale } from "@/lib/locale";
@@ -82,8 +83,9 @@ export default async function CourseDetailContent({
   return (
     <>
       <Header locale={locale} />
-      <main className="flex-1 bg-[#0b1026] pt-16">
-        <div className="max-w-5xl mx-auto px-6 py-16">
+      <main className="relative flex-1 bg-[#0b1026] pt-16 overflow-hidden">
+        <AscentEcho />
+        <div className="relative z-10 max-w-5xl mx-auto px-6 py-16">
           {/* Breadcrumb (#3) */}
           <Link
             href={localizedPath("/courses", locale)}
