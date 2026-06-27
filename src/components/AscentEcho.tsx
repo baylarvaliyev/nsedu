@@ -107,7 +107,7 @@ export default function AscentEcho() {
   return (
     <div className="absolute inset-0">
       <Canvas
-        camera={{ position: [0, 0, 4], fov: 45 }}
+        camera={{ position: [0, 0, isMobile ? 6.5 : 4], fov: isMobile ? 60 : 45 }}
         dpr={isMobile ? 1 : [1, 1.5]}
         gl={{ antialias: !isMobile, alpha: true }}
       >

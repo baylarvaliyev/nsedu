@@ -298,7 +298,7 @@ export default function AscentScene({ ready = true }: { ready?: boolean }) {
   return (
     <div className="absolute inset-0">
       <Canvas
-        camera={{ position: [0, 0, 5], fov: 50 }}
+        camera={{ position: [0, 0, isMobile ? 8 : 5], fov: isMobile ? 65 : 50 }}
         dpr={isMobile ? 1 : [1, 1.5]}
         gl={{ antialias: !isMobile, alpha: true }}
       >
