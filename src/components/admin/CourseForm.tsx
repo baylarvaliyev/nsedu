@@ -41,6 +41,9 @@ export type CourseFormValues = {
   long_description_az: string;
   long_description_en: string;
   long_description_ru: string;
+  syllabus_az: string;
+  syllabus_en: string;
+  syllabus_ru: string;
   price_amount: string;
   price_currency: string;
   start_date: string;
@@ -64,6 +67,9 @@ const EMPTY: CourseFormValues = {
   long_description_az: "",
   long_description_en: "",
   long_description_ru: "",
+  syllabus_az: "",
+  syllabus_en: "",
+  syllabus_ru: "",
   price_amount: "",
   price_currency: "AZN",
   start_date: "",
@@ -138,6 +144,9 @@ export default function CourseForm({
       long_description_az: values.long_description_az.trim() || null,
       long_description_en: values.long_description_en.trim() || null,
       long_description_ru: values.long_description_ru.trim() || null,
+      syllabus_az: values.syllabus_az.trim() || null,
+      syllabus_en: values.syllabus_en.trim() || null,
+      syllabus_ru: values.syllabus_ru.trim() || null,
       price_amount: values.price_amount ? Number(values.price_amount) : null,
       price_currency: values.price_currency,
       start_date: values.start_date || null,
@@ -332,6 +341,47 @@ export default function CourseForm({
             <textarea
               value={values.long_description_ru}
               onChange={(e) => update("long_description_ru", e.target.value)}
+              rows={6}
+              className={inputClass}
+            />
+          </Field>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-xl border border-[#e5e3dc] p-6 mb-6">
+        <h2 className="font-display text-lg text-[#0B1026] mb-1">
+          Syllabus
+        </h2>
+        <p className="font-body text-xs text-[#888] mb-4">
+          Shown as a visual timeline on the course page. Write one line per phase, starting with a short label and a colon — for example:
+          <br />
+          <span className="font-mono text-[11px] text-[#555]">
+            Weeks 1-3: Foundations — core grammar, vocabulary, pronunciation.
+            <br />
+            Weeks 4-6: Speaking confidence — guided conversation practice.
+          </span>
+        </p>
+        <div className="grid gap-4">
+          <Field label="Syllabus (English)">
+            <textarea
+              value={values.syllabus_en}
+              onChange={(e) => update("syllabus_en", e.target.value)}
+              rows={6}
+              className={inputClass}
+            />
+          </Field>
+          <Field label="Syllabus (Azərbaycan)">
+            <textarea
+              value={values.syllabus_az}
+              onChange={(e) => update("syllabus_az", e.target.value)}
+              rows={6}
+              className={inputClass}
+            />
+          </Field>
+          <Field label="Syllabus (Русский)">
+            <textarea
+              value={values.syllabus_ru}
+              onChange={(e) => update("syllabus_ru", e.target.value)}
               rows={6}
               className={inputClass}
             />
