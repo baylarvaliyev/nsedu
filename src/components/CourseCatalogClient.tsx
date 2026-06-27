@@ -109,7 +109,7 @@ export default function CourseCatalogClient({
   }
 
   return (
-    <section id="courses" className="bg-[#0b1026] py-24 px-6">
+    <section id="courses" className="relative z-10 py-24 px-6">
       <div className="max-w-6xl mx-auto">
         <p className="font-body text-xs uppercase tracking-[0.3em] text-[#8A93B8] mb-4">
           {t.eyebrow}

@@ -7,7 +7,7 @@ export default function Footer({ locale = "en" as Locale }: { locale?: Locale })
   const coursesPath = localizedPath("/courses", locale);
 
   return (
-    <footer className="bg-[#060815] border-t border-[#8A93B8]/10">
+    <footer className="relative z-10 bg-[#060815] border-t border-[#8A93B8]/10">
       <div className="max-w-6xl mx-auto px-6 py-12 grid gap-10 sm:grid-cols-3">
         <div>
           <p className="font-display text-lg text-[#F5F3EE]">North Star Academy</p>

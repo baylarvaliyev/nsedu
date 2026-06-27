@@ -4,6 +4,7 @@ import CourseCatalog from "@/components/CourseCatalog";
 import CoursesPageIntro from "@/components/CoursesPageIntro";
 import FaqSection from "@/components/FaqSection";
 import ContactSection from "@/components/ContactSection";
+import AmbientPageBackground from "@/components/AmbientPageBackground";
 import { createClient } from "@/lib/supabase/server";
 import type { Locale } from "@/lib/locale";
 
@@ -24,6 +25,7 @@ export default async function CoursesIndexContent({
 
   return (
     <>
+      <AmbientPageBackground />
       <Header locale={locale} />
       <main className="relative flex-1">
         <CoursesPageIntro

@@ -1,10 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { generateOrganicStars } from "@/lib/stars";
 import type { Locale } from "@/lib/locale";
-
-const AMBIENT_STARS = generateOrganicStars(70);
 
 const INTRO_STRINGS = {
   en: {
@@ -36,28 +33,7 @@ export default function CoursesPageIntro({
   const t = INTRO_STRINGS[locale];
 
   return (
-    <section className="relative min-h-[70vh] overflow-hidden bg-[#0b1026] pt-32 pb-16 px-6">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_30%,rgba(242,193,78,0.08),transparent_60%)]" />
-      <svg
-        viewBox="0 0 100 60"
-        preserveAspectRatio="xMidYMid slice"
-        className="absolute inset-0 h-full w-full animate-star-drift opacity-60"
-      >
-        {AMBIENT_STARS.map((star, i) => (
-          <circle
-            key={i}
-            cx={star.x}
-            cy={star.y * 0.6}
-            r={star.size}
-            fill="#F5F3EE"
-            opacity={star.opacity}
-            className="animate-twinkle"
-            style={{ animationDelay: `${star.delay}s` }}
-          />
-        ))}
-      </svg>
-
-
+    <section className="relative z-10 min-h-[70vh] pt-32 pb-16 px-6">
       <div className="relative z-10 max-w-3xl mx-auto text-center">
         <motion.p
           initial={{ opacity: 0, y: 8 }}

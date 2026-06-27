@@ -40,7 +40,7 @@ export default function ContactSection({ locale = "en" as Locale }: { locale?: L
   const telLink = `tel:${WHATSAPP_NUMBER}`;
 
   return (
-    <section id="contact" className="bg-[#0b1026] py-24 px-6 border-t border-[#8A93B8]/10">
+    <section id="contact" className="relative z-10 py-24 px-6 border-t border-[#8A93B8]/10">
       <div className="max-w-2xl mx-auto text-center">
         <p className="font-body text-xs uppercase tracking-[0.3em] text-[#8A93B8] mb-4">
           {t.eyebrow}

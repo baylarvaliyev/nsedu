@@ -34,7 +34,7 @@ export default function FaqSection({
   if (items.length === 0) return null;
 
   return (
-    <section id="faq" className="bg-[#0b1026] py-24 px-6 border-t border-[#8A93B8]/10">
+    <section id="faq" className="relative z-10 py-24 px-6 border-t border-[#8A93B8]/10">
       <div className="max-w-3xl mx-auto">
         <p className="font-body text-xs uppercase tracking-[0.3em] text-[#8A93B8] mb-4">
           {t.eyebrow}
