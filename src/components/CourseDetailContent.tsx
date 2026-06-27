@@ -3,8 +3,12 @@ import { notFound } from "next/navigation";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import EnrollmentForm from "@/components/EnrollmentForm";
+import SyllabusTimeline from "@/components/SyllabusTimeline";
+import RelatedCourses from "@/components/RelatedCourses";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 import type { Locale } from "@/lib/locale";
-import { localized, daysUntil } from "@/lib/locale";
+import { localized, daysUntil, localizedPath } from "@/lib/locale";
 
 const STARTS_SOON_DAYS = 14;
 
@@ -18,9 +22,9 @@ function startsSoonLabel(days: number, locale: Locale): string {
 }
 
 const COURSE_STRINGS = {
-  en: { eyebrow: "Course", learn: "What you'll learn", price: "Price", starts: "Starts", duration: "Duration", weeks: "weeks" },
-  az: { eyebrow: "Kurs", learn: "Nə öyrənəcəksiniz", price: "Qiymət", starts: "Başlanğıc", duration: "Müddət", weeks: "həftə" },
-  ru: { eyebrow: "Курс", learn: "Чему вы научитесь", price: "Цена", starts: "Старт", duration: "Длительность", weeks: "недель" },
+  en: { eyebrow: "Course", learn: "What you'll learn", price: "Price", starts: "Starts", duration: "Duration", weeks: "weeks", backTo: "Back to" },
+  az: { eyebrow: "Kurs", learn: "Nə öyrənəcəksiniz", price: "Qiymət", starts: "Başlanğıc", duration: "Müddət", weeks: "həftə", backTo: "Geri" },
+  ru: { eyebrow: "Курс", learn: "Чему вы научитесь", price: "Цена", starts: "Старт", duration: "Длительность", weeks: "недель", backTo: "Назад к" },
 } as const;
 
 export default async function CourseDetailContent({
@@ -34,7 +38,7 @@ export default async function CourseDetailContent({
 
   const { data: course } = await supabase
     .from("courses")
-    .select("*")
+    .select("*, categories(id, slug, name_az, name_en, name_ru)")
     .eq("slug", slug)
     .eq("is_published", true)
     .single();
@@ -42,6 +46,19 @@ export default async function CourseDetailContent({
   if (!course) {
     notFound();
   }
+
+  // Other published courses in the same category, excluding this one —
+  // for the "related courses" section (#4). Only fetched when a category
+  // exists, since uncategorized courses have nothing meaningful to relate to.
+  const { data: relatedCourses } = course.category_id
+    ? await supabase
+        .from("courses")
+        .select("id, slug, title_az, title_en, title_ru, price_amount, price_currency, cover_image_url")
+        .eq("category_id", course.category_id)
+        .eq("is_published", true)
+        .neq("id", course.id)
+        .limit(3)
+    : { data: [] };
 
   const t = COURSE_STRINGS[locale];
   const dateLocale = locale === "ru" ? "ru-RU" : locale === "az" ? "az-AZ" : "en-GB";
@@ -51,92 +68,112 @@ export default async function CourseDetailContent({
   const syllabus = localized(course, "syllabus", locale);
   const days = daysUntil(course.start_date);
   const showsStartsSoon = days !== null && days <= STARTS_SOON_DAYS;
+  const category = course.categories;
+  const categoryName = category ? localized(category, "name", locale) : null;
 
   return (
     <>
       <Header locale={locale} />
       <main className="flex-1 bg-[#0b1026] pt-16">
-        <div className="max-w-5xl mx-auto px-6 py-16 grid lg:grid-cols-3 gap-12">
-          <div className="lg:col-span-2">
-            <p className="font-body text-xs uppercase tracking-[0.25em] text-[#8A93B8] mb-3">
-              {t.eyebrow}
-            </p>
-            {showsStartsSoon && (
-              <span className="inline-block mb-3 rounded-full bg-[#F2C14E] text-[#0B1026] text-xs font-body font-semibold px-3 py-1">
-                {startsSoonLabel(days!, locale)}
-              </span>
-            )}
-            <h1 className="font-display text-3xl sm:text-4xl text-[#F5F3EE] mb-6">
-              {title}
-            </h1>
+        <div className="max-w-5xl mx-auto px-6 py-16">
+          {/* Breadcrumb (#3) */}
+          <Link
+            href={localizedPath("/courses", locale)}
+            className="inline-flex items-center gap-2 font-body text-sm text-[#8A93B8] hover:text-[#F5F3EE] transition-colors mb-6"
+          >
+            <ArrowLeft size={15} />
+            {t.backTo} {categoryName || (locale === "az" ? "Kurslar" : locale === "ru" ? "Курсы" : "Courses")}
+          </Link>
 
-            {course.cover_image_url && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={course.cover_image_url}
-                alt={title}
-                className="w-full rounded-2xl mb-8 object-cover max-h-80"
-              />
-            )}
-
-            {description && (
-              <p className="font-body text-lg text-[#F5F3EE]/90 leading-relaxed mb-6">
-                {description}
+          <div className="grid lg:grid-cols-3 gap-12">
+            <div className="lg:col-span-2">
+              <p className="font-body text-xs uppercase tracking-[0.25em] text-[#8A93B8] mb-3">
+                {t.eyebrow}
               </p>
-            )}
+              {showsStartsSoon && (
+                <span className="inline-block mb-3 rounded-full bg-[#F2C14E] text-[#0B1026] text-xs font-body font-semibold px-3 py-1">
+                  {startsSoonLabel(days!, locale)}
+                </span>
+              )}
+              <h1 className="font-display text-3xl sm:text-4xl text-[#F5F3EE] mb-6">
+                {title}
+              </h1>
 
-            {longDescription && (
-              <p className="font-body text-base text-[#8A93B8] leading-relaxed mb-8 whitespace-pre-line">
-                {longDescription}
-              </p>
-            )}
+              {course.cover_image_url && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={course.cover_image_url}
+                  alt={title}
+                  className="w-full rounded-2xl mb-8 object-cover max-h-80"
+                />
+              )}
 
-            {syllabus && (
-              <div className="mb-8">
-                <h2 className="font-display text-xl text-[#F5F3EE] mb-3">
-                  {t.learn}
-                </h2>
-                <p className="font-body text-sm text-[#8A93B8] leading-relaxed whitespace-pre-line">
-                  {syllabus}
+              {/* Marketing pitch — visually distinct (#6): brighter text,
+                  larger, set apart from the structured facts below. */}
+              {description && (
+                <p className="font-display text-xl text-[#F5F3EE] leading-relaxed mb-8">
+                  {description}
                 </p>
-              </div>
-            )}
+              )}
 
-            <div className="flex flex-wrap gap-6 pt-6 border-t border-[#8A93B8]/10">
-              {course.price_amount && (
-                <div>
-                  <p className="font-body text-xs text-[#8A93B8] mb-1">{t.price}</p>
-                  <p className="font-display text-lg text-[#F2C14E]">
-                    {course.price_amount} {course.price_currency}
+              {longDescription && (
+                <div className="rounded-2xl bg-[#0f1530] border border-[#8A93B8]/10 p-6 mb-8">
+                  <p className="font-body text-base text-[#8A93B8] leading-relaxed whitespace-pre-line">
+                    {longDescription}
                   </p>
                 </div>
               )}
-              {course.start_date && (
-                <div>
-                  <p className="font-body text-xs text-[#8A93B8] mb-1">{t.starts}</p>
-                  <p className="font-display text-lg text-[#F5F3EE]">
-                    {new Date(course.start_date).toLocaleDateString(dateLocale, {
-                      day: "numeric",
-                      month: "long",
-                      year: "numeric",
-                    })}
-                  </p>
-                </div>
-              )}
-              {course.duration_weeks && (
-                <div>
-                  <p className="font-body text-xs text-[#8A93B8] mb-1">{t.duration}</p>
-                  <p className="font-display text-lg text-[#F5F3EE]">
-                    {course.duration_weeks} {t.weeks}
-                  </p>
+
+              {syllabus && (
+                <div className="mb-8">
+                  <h2 className="font-display text-xl text-[#F5F3EE] mb-5">
+                    {t.learn}
+                  </h2>
+                  <SyllabusTimeline raw={syllabus} />
                 </div>
               )}
             </div>
+
+            {/* Sticky sidebar (#5): stays in view while scrolling the long
+                content column, so enrollment is always one click away. */}
+            <div className="lg:sticky lg:top-24 lg:self-start space-y-6">
+              <div className="rounded-2xl bg-[#0f1530] border border-[#8A93B8]/15 p-6">
+                <div className="flex items-end justify-between mb-4 pb-4 border-b border-[#8A93B8]/10">
+                  {course.price_amount && (
+                    <div>
+                      <p className="font-body text-xs text-[#8A93B8] mb-1">{t.price}</p>
+                      <p className="font-display text-2xl text-[#F2C14E]">
+                        {course.price_amount} {course.price_currency}
+                      </p>
+                    </div>
+                  )}
+                  {course.duration_weeks && (
+                    <p className="font-body text-xs text-[#8A93B8]">
+                      {course.duration_weeks} {t.weeks}
+                    </p>
+                  )}
+                </div>
+                {course.start_date && (
+                  <div className="mb-4">
+                    <p className="font-body text-xs text-[#8A93B8] mb-1">{t.starts}</p>
+                    <p className="font-display text-base text-[#F5F3EE]">
+                      {new Date(course.start_date).toLocaleDateString(dateLocale, {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
+                      })}
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              <EnrollmentForm courseId={course.id} courseTitle={title} locale={locale} />
+            </div>
           </div>
 
-          <div>
-            <EnrollmentForm courseId={course.id} courseTitle={title} locale={locale} />
-          </div>
+          {relatedCourses && relatedCourses.length > 0 && (
+            <RelatedCourses courses={relatedCourses} locale={locale} />
+          )}
         </div>
       </main>
       <Footer locale={locale} />
