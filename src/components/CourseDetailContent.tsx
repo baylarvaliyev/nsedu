@@ -6,7 +6,7 @@ import EnrollmentForm from "@/components/EnrollmentForm";
 import SyllabusTimeline from "@/components/SyllabusTimeline";
 import RelatedCourses from "@/components/RelatedCourses";
 import CourseFaqAccordion from "@/components/CourseFaqAccordion";
-import AmbientPageBackground from "@/components/AmbientPageBackground";
+import AscentScene from "@/components/AscentScene";
 import Link from "next/link";
 import { ArrowLeft, Users } from "lucide-react";
 import type { Locale } from "@/lib/locale";
@@ -82,7 +82,9 @@ export default async function CourseDetailContent({
 
   return (
     <>
-      <AmbientPageBackground />
+      <div className="fixed inset-0 pointer-events-none z-0 bg-[#0b1026]">
+        <AscentScene ready={true} />
+      </div>
       <Header locale={locale} />
       <main className="relative flex-1 pt-16">
         <div className="relative z-10 max-w-5xl mx-auto px-6 py-16">
