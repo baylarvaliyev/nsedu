@@ -98,6 +98,11 @@ export default async function CourseDetailContent({
               <p className="font-body text-xs uppercase tracking-[0.25em] text-[#8A93B8] mb-3">
                 {t.eyebrow}
               </p>
+              {course.level && (
+                <span className="inline-block mb-3 mr-2 rounded-full bg-[#8A93B8]/15 text-[#8A93B8] text-xs font-body px-3 py-1">
+                  {course.level}
+                </span>
+              )}
               {showsStartsSoon && (
                 <span className="inline-block mb-3 rounded-full bg-[#F2C14E] text-[#0B1026] text-xs font-body font-semibold px-3 py-1">
                   {startsSoonLabel(days!, locale)}
