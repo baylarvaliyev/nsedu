@@ -11,6 +11,7 @@ import {
   Award,
   Briefcase,
   Users,
+  Inbox,
   LogOut,
 } from "lucide-react";
 
@@ -18,6 +19,7 @@ type Role = "owner" | "editor";
 
 const NAV_ITEMS: { href: string; label: string; icon: typeof BookOpen; ownerOnly?: boolean }[] = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/admin/leads", label: "Course Leads", icon: Inbox },
   { href: "/admin/courses", label: "Courses", icon: BookOpen },
   { href: "/admin/categories", label: "Categories", icon: FolderTree },
   { href: "/admin/blog", label: "Blog", icon: Newspaper },
