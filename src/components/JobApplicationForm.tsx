@@ -19,6 +19,7 @@ const APPLY_STRINGS = {
     sending: "Sending...",
     error_required: "Please share your name and email.",
     error_db: "Something went wrong. Please try again.",
+    error_rate_limit: "You've already applied recently with this email. Please wait a few minutes before applying again.",
     thanks: "Thanks",
     confirmed: "We've received your application and will be in touch.",
   },
@@ -36,6 +37,7 @@ const APPLY_STRINGS = {
     sending: "Göndərilir...",
     error_required: "Zəhmət olmasa adınızı və e-poçtunuzu qeyd edin.",
     error_db: "Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.",
+    error_rate_limit: "Bu e-poçtla bu yaxınlarda artıq müraciət etmisiniz. Bir neçə dəqiqə sonra yenidən cəhd edin.",
     thanks: "Təşəkkürlər",
     confirmed: "Müraciətinizi aldıq, sizinlə əlaqə saxlayacağıq.",
   },
@@ -53,6 +55,7 @@ const APPLY_STRINGS = {
     sending: "Отправка...",
     error_required: "Пожалуйста, укажите имя и email.",
     error_db: "Что-то пошло не так. Попробуйте ещё раз.",
+    error_rate_limit: "Вы уже недавно подавали заявку с этим email. Подождите несколько минут и попробуйте снова.",
     thanks: "Спасибо",
     confirmed: "Мы получили вашу заявку и свяжемся с вами.",
   },
@@ -107,7 +110,8 @@ export default function JobApplicationForm({
     setSubmitting(false);
 
     if (dbError) {
-      setError(t.error_db);
+      const isRateLimited = dbError.message?.toLowerCase().includes("wait a few minutes");
+      setError(isRateLimited ? t.error_rate_limit : t.error_db);
       return;
     }
 

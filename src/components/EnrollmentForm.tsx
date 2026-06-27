@@ -21,6 +21,7 @@ const ENROLL_STRINGS = {
     sending: "Sending...",
     error_required: "Please share your name and phone number.",
     error_db: "Something went wrong saving your request. Please try again.",
+    error_rate_limit: "You've already submitted a request recently. Please wait a few minutes before trying again, or message us directly on WhatsApp.",
     thanks: "Thanks",
     confirmed_pre: "We've got your request for",
     confirmed_post: "An advisor will reach out shortly.",
@@ -37,6 +38,7 @@ const ENROLL_STRINGS = {
     sending: "Göndərilir...",
     error_required: "Zəhmət olmasa adınızı və telefon nömrənizi qeyd edin.",
     error_db: "Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.",
+    error_rate_limit: "Bu yaxınlarda artıq müraciət göndərmisiniz. Bir neçə dəqiqə sonra yenidən cəhd edin, və ya birbaşa WhatsApp-da bizə yazın.",
     thanks: "Təşəkkürlər",
     confirmed_pre: "Müraciətinizi aldıq:",
     confirmed_post: "Məsləhətçimiz tezliklə sizinlə əlaqə saxlayacaq.",
@@ -53,6 +55,7 @@ const ENROLL_STRINGS = {
     sending: "Отправка...",
     error_required: "Пожалуйста, укажите имя и номер телефона.",
     error_db: "Что-то пошло не так. Попробуйте ещё раз.",
+    error_rate_limit: "Вы уже недавно отправляли заявку. Подождите несколько минут и попробуйте снова, или напишите нам прямо в WhatsApp.",
     thanks: "Спасибо",
     confirmed_pre: "Мы получили вашу заявку на",
     confirmed_post: "Консультант скоро с вами свяжется.",
@@ -101,7 +104,11 @@ export default function EnrollmentForm({
 
     if (dbError) {
       setSubmitting(false);
-      setError(t.error_db);
+      // Our Postgres trigger raises a specific message for rate-limited
+      // submissions — detect it and show a clearer, more helpful error
+      // than the generic fallback.
+      const isRateLimited = dbError.message?.toLowerCase().includes("wait a few minutes");
+      setError(isRateLimited ? t.error_rate_limit : t.error_db);
       return;
     }
 
