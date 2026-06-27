@@ -14,9 +14,11 @@ export type Course = {
   description_ru: string | null;
   cover_image_url: string | null;
   price_amount: number | null;
+  original_price_amount: number | null;
   price_currency: string;
   start_date: string | null;
   category_id: string | null;
+  level: string | null;
 };
 
 export type Category = {
@@ -25,6 +27,9 @@ export type Category = {
   name_az: string;
   name_en: string;
   name_ru: string;
+  description_az: string | null;
+  description_en: string | null;
+  description_ru: string | null;
   cover_image_url: string | null;
 };
 
@@ -39,13 +44,13 @@ export default async function CourseCatalog({
     supabase
       .from("courses")
       .select(
-        "id, slug, title_az, title_en, title_ru, description_az, description_en, description_ru, cover_image_url, price_amount, price_currency, start_date, category_id"
+        "id, slug, title_az, title_en, title_ru, description_az, description_en, description_ru, cover_image_url, price_amount, original_price_amount, price_currency, start_date, category_id, level"
       )
       .eq("is_published", true)
       .order("start_date", { ascending: true }),
     supabase
       .from("categories")
-      .select("id, slug, name_az, name_en, name_ru, cover_image_url")
+      .select("id, slug, name_az, name_en, name_ru, description_az, description_en, description_ru, cover_image_url")
       .order("display_order", { ascending: true }),
   ]);
 

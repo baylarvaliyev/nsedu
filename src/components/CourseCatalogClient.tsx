@@ -124,9 +124,17 @@ export default function CourseCatalogClient({
               <ArrowLeft size={16} />
               {t.all_categories}
             </button>
-            <h2 className="font-display text-3xl sm:text-4xl text-[#F5F3EE] mb-12">
+            <h2 className="font-display text-3xl sm:text-4xl text-[#F5F3EE] mb-4">
               {activeCategory ? localized(activeCategory, "name", locale) : t.other_courses}
             </h2>
+            {activeCategory && localized(activeCategory, "description", locale) && (
+              <p className="font-body text-base text-[#8A93B8] leading-relaxed mb-12 max-w-2xl">
+                {localized(activeCategory, "description", locale)}
+              </p>
+            )}
+            {!(activeCategory && localized(activeCategory, "description", locale)) && (
+              <div className="mb-12" />
+            )}
           </>
         ) : (
           <h2 className="font-display text-3xl sm:text-4xl text-[#F5F3EE] mb-12">
@@ -243,6 +251,11 @@ export default function CourseCatalogClient({
                         />
                       )}
                       <div className="p-6 flex flex-col flex-1">
+                        {course.level && (
+                          <span className="inline-block w-fit mb-2 rounded-full bg-[#8A93B8]/15 text-[#8A93B8] text-xs font-body px-2.5 py-1">
+                            {course.level}
+                          </span>
+                        )}
                         <h3 className="font-display text-xl text-[#F5F3EE] mb-2">
                           {title}
                         </h3>
@@ -253,8 +266,15 @@ export default function CourseCatalogClient({
                         )}
                         <div className="mt-auto flex items-center justify-between pt-4 border-t border-[#8A93B8]/10">
                           {course.price_amount && (
-                            <span className="font-body text-sm font-semibold text-[#F2C14E]">
-                              {course.price_amount} {course.price_currency}
+                            <span className="flex items-baseline gap-2">
+                              {course.original_price_amount && course.original_price_amount > course.price_amount && (
+                                <span className="font-body text-xs text-[#8A93B8] line-through">
+                                  {course.original_price_amount} {course.price_currency}
+                                </span>
+                              )}
+                              <span className="font-body text-sm font-semibold text-[#F2C14E]">
+                                {course.price_amount} {course.price_currency}
+                              </span>
                             </span>
                           )}
                           {course.start_date && (

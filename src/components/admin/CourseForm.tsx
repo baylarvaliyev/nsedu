@@ -45,11 +45,13 @@ export type CourseFormValues = {
   syllabus_en: string;
   syllabus_ru: string;
   price_amount: string;
+  original_price_amount: string;
   price_currency: string;
   start_date: string;
   duration_weeks: string;
   is_published: boolean;
   cover_image_url: string | null;
+  level: string;
   who_for_az: string;
   who_for_en: string;
   who_for_ru: string;
@@ -71,11 +73,13 @@ const EMPTY: CourseFormValues = {
   syllabus_en: "",
   syllabus_ru: "",
   price_amount: "",
+  original_price_amount: "",
   price_currency: "AZN",
   start_date: "",
   duration_weeks: "",
   is_published: false,
   cover_image_url: null,
+  level: "",
   who_for_az: "",
   who_for_en: "",
   who_for_ru: "",
@@ -128,6 +132,14 @@ export default function CourseForm({
       setError("Please fill in the course title for all three languages.");
       return;
     }
+    if (
+      values.original_price_amount &&
+      values.price_amount &&
+      Number(values.original_price_amount) <= Number(values.price_amount)
+    ) {
+      setError("The original price must be higher than the discounted price, or leave it blank.");
+      return;
+    }
 
     setSaving(true);
 
@@ -148,6 +160,7 @@ export default function CourseForm({
       syllabus_en: values.syllabus_en.trim() || null,
       syllabus_ru: values.syllabus_ru.trim() || null,
       price_amount: values.price_amount ? Number(values.price_amount) : null,
+      original_price_amount: values.original_price_amount ? Number(values.original_price_amount) : null,
       price_currency: values.price_currency,
       start_date: values.start_date || null,
       duration_weeks: values.duration_weeks
@@ -155,6 +168,7 @@ export default function CourseForm({
         : null,
       is_published: values.is_published,
       cover_image_url: values.cover_image_url,
+      level: values.level.trim() || null,
       who_for_az: values.who_for_az.trim() || null,
       who_for_en: values.who_for_en.trim() || null,
       who_for_ru: values.who_for_ru.trim() || null,
@@ -434,6 +448,24 @@ export default function CourseForm({
               <option value="USD">USD</option>
               <option value="EUR">EUR</option>
             </select>
+          </Field>
+          <Field label="Original price (optional — shown crossed out if higher than Price)">
+            <input
+              type="number"
+              min="0"
+              step="0.01"
+              value={values.original_price_amount}
+              onChange={(e) => update("original_price_amount", e.target.value)}
+              className={inputClass}
+            />
+          </Field>
+          <Field label="Level (optional, e.g. Beginner)">
+            <input
+              value={values.level}
+              onChange={(e) => update("level", e.target.value)}
+              placeholder="Beginner"
+              className={inputClass}
+            />
           </Field>
           <Field label="Duration (weeks)">
             <input

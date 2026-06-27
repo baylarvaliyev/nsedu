@@ -168,9 +168,16 @@ export default async function CourseDetailContent({
                   {course.price_amount && (
                     <div>
                       <p className="font-body text-xs text-[#8A93B8] mb-1">{t.price}</p>
-                      <p className="font-display text-2xl text-[#F2C14E]">
-                        {course.price_amount} {course.price_currency}
-                      </p>
+                      <div className="flex items-baseline gap-2">
+                        {course.original_price_amount && course.original_price_amount > course.price_amount && (
+                          <p className="font-body text-sm text-[#8A93B8] line-through">
+                            {course.original_price_amount} {course.price_currency}
+                          </p>
+                        )}
+                        <p className="font-display text-2xl text-[#F2C14E]">
+                          {course.price_amount} {course.price_currency}
+                        </p>
+                      </div>
                     </div>
                   )}
                   {course.duration_weeks && (

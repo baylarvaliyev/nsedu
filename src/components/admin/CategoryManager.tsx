@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { Trash2 } from "lucide-react";
+import { Trash2, Pencil, X } from "lucide-react";
 import ImageUpload from "./ImageUpload";
 
 type Category = {
@@ -12,6 +12,9 @@ type Category = {
   name_az: string;
   name_en: string;
   name_ru: string;
+  description_az: string | null;
+  description_en: string | null;
+  description_ru: string | null;
   display_order: number;
   cover_image_url: string | null;
 };
@@ -26,6 +29,74 @@ function sanitizeSlug(input: string): string {
     .replace(/^-|-$/g, "");
 }
 
+const inputClass =
+  "w-full rounded-lg border border-[#ddd] px-3 py-2 font-body text-sm text-[#0B1026] focus:outline-none focus:border-[#0B1026]/40";
+
+function CategoryEditRow({ cat }: { cat: Category }) {
+  const router = useRouter();
+  const [nameEn, setNameEn] = useState(cat.name_en);
+  const [nameAz, setNameAz] = useState(cat.name_az);
+  const [nameRu, setNameRu] = useState(cat.name_ru);
+  const [descEn, setDescEn] = useState(cat.description_en ?? "");
+  const [descAz, setDescAz] = useState(cat.description_az ?? "");
+  const [descRu, setDescRu] = useState(cat.description_ru ?? "");
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleSave() {
+    setError(null);
+    if (!nameEn.trim() || !nameAz.trim() || !nameRu.trim()) {
+      setError("Name is required in all three languages.");
+      return;
+    }
+    setSaving(true);
+    const supabase = createClient();
+    const { error: updateError } = await supabase
+      .from("categories")
+      .update({
+        name_en: nameEn.trim(),
+        name_az: nameAz.trim(),
+        name_ru: nameRu.trim(),
+        description_en: descEn.trim() || null,
+        description_az: descAz.trim() || null,
+        description_ru: descRu.trim() || null,
+      })
+      .eq("id", cat.id);
+    setSaving(false);
+
+    if (updateError) {
+      setError(updateError.message);
+      return;
+    }
+    router.refresh();
+  }
+
+  return (
+    <div className="bg-[#f7f6f3] rounded-lg p-4 mt-3">
+      <p className="font-body text-xs text-[#888] mb-2">Name</p>
+      <div className="grid sm:grid-cols-3 gap-2 mb-3">
+        <input value={nameEn} onChange={(e) => setNameEn(e.target.value)} placeholder="English" className={inputClass} />
+        <input value={nameAz} onChange={(e) => setNameAz(e.target.value)} placeholder="Azərbaycan" className={inputClass} />
+        <input value={nameRu} onChange={(e) => setNameRu(e.target.value)} placeholder="Русский" className={inputClass} />
+      </div>
+      <p className="font-body text-xs text-[#888] mb-2">Description (shown on the category page)</p>
+      <div className="grid sm:grid-cols-3 gap-2 mb-3">
+        <textarea value={descEn} onChange={(e) => setDescEn(e.target.value)} placeholder="English" rows={3} className={inputClass} />
+        <textarea value={descAz} onChange={(e) => setDescAz(e.target.value)} placeholder="Azərbaycan" rows={3} className={inputClass} />
+        <textarea value={descRu} onChange={(e) => setDescRu(e.target.value)} placeholder="Русский" rows={3} className={inputClass} />
+      </div>
+      {error && <p className="font-body text-sm text-red-600 mb-2">{error}</p>}
+      <button
+        onClick={handleSave}
+        disabled={saving}
+        className="rounded-full bg-[#0B1026] text-white font-body text-sm font-medium px-4 py-1.5 hover:bg-[#1a2046] transition-colors disabled:opacity-60"
+      >
+        {saving ? "Saving..." : "Save changes"}
+      </button>
+    </div>
+  );
+}
+
 export default function CategoryManager({
   initialCategories,
 }: {
@@ -37,6 +108,7 @@ export default function CategoryManager({
   const [nameRu, setNameRu] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   async function handleAdd(e: React.FormEvent) {
     e.preventDefault();
@@ -97,9 +169,6 @@ export default function CategoryManager({
     router.refresh();
   }
 
-  const inputClass =
-    "w-full rounded-lg border border-[#ddd] px-3 py-2 font-body text-sm text-[#0B1026] focus:outline-none focus:border-[#0B1026]/40";
-
   return (
     <div className="max-w-2xl">
       <form
@@ -110,28 +179,11 @@ export default function CategoryManager({
           Add a category
         </h2>
         <div className="grid sm:grid-cols-3 gap-3 mb-3">
-          <input
-            value={nameEn}
-            onChange={(e) => setNameEn(e.target.value)}
-            placeholder="English"
-            className={inputClass}
-          />
-          <input
-            value={nameAz}
-            onChange={(e) => setNameAz(e.target.value)}
-            placeholder="Azərbaycan"
-            className={inputClass}
-          />
-          <input
-            value={nameRu}
-            onChange={(e) => setNameRu(e.target.value)}
-            placeholder="Русский"
-            className={inputClass}
-          />
+          <input value={nameEn} onChange={(e) => setNameEn(e.target.value)} placeholder="English" className={inputClass} />
+          <input value={nameAz} onChange={(e) => setNameAz(e.target.value)} placeholder="Azərbaycan" className={inputClass} />
+          <input value={nameRu} onChange={(e) => setNameRu(e.target.value)} placeholder="Русский" className={inputClass} />
         </div>
-        {error && (
-          <p className="font-body text-sm text-red-600 mb-3">{error}</p>
-        )}
+        {error && <p className="font-body text-sm text-red-600 mb-3">{error}</p>}
         <button
           type="submit"
           disabled={saving}
@@ -146,30 +198,37 @@ export default function CategoryManager({
       ) : (
         <div className="bg-white rounded-xl border border-[#e5e3dc] overflow-hidden">
           {initialCategories.map((cat) => (
-            <div
-              key={cat.id}
-              className="flex items-start justify-between px-5 py-4 border-b border-[#f0eee8] last:border-0 gap-4"
-            >
-              <div className="flex-1">
-                <p className="font-body text-sm text-[#0B1026]">
-                  {cat.name_en}
-                </p>
-                <p className="font-body text-xs text-[#888] mb-3">
-                  {cat.name_az} · {cat.name_ru}
-                </p>
-                <ImageUpload
-                  value={cat.cover_image_url}
-                  onChange={(url) => updateCategoryImage(cat.id, url)}
-                  folder="categories"
-                />
+            <div key={cat.id} className="px-5 py-4 border-b border-[#f0eee8] last:border-0">
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex-1">
+                  <p className="font-body text-sm text-[#0B1026]">{cat.name_en}</p>
+                  <p className="font-body text-xs text-[#888] mb-3">
+                    {cat.name_az} · {cat.name_ru}
+                  </p>
+                  <ImageUpload
+                    value={cat.cover_image_url}
+                    onChange={(url) => updateCategoryImage(cat.id, url)}
+                    folder="categories"
+                  />
+                </div>
+                <div className="flex items-center gap-3 shrink-0">
+                  <button
+                    onClick={() => setEditingId(editingId === cat.id ? null : cat.id)}
+                    className="text-[#0B1026] hover:text-[#1a2046]"
+                    aria-label="Edit category"
+                  >
+                    {editingId === cat.id ? <X size={16} /> : <Pencil size={16} />}
+                  </button>
+                  <button
+                    onClick={() => handleDelete(cat.id)}
+                    className="text-red-600 hover:text-red-700"
+                    aria-label="Delete category"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                </div>
               </div>
-              <button
-                onClick={() => handleDelete(cat.id)}
-                className="text-red-600 hover:text-red-700 shrink-0"
-                aria-label="Delete category"
-              >
-                <Trash2 size={16} />
-              </button>
+              {editingId === cat.id && <CategoryEditRow cat={cat} />}
             </div>
           ))}
         </div>

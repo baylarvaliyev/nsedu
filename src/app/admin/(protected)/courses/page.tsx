@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { Plus } from "lucide-react";
 import DeleteCourseButton from "@/components/admin/DeleteCourseButton";
+import DuplicateCourseButton from "@/components/admin/DuplicateCourseButton";
 
 export default async function AdminCoursesPage() {
   const supabase = await createClient();
@@ -57,10 +58,11 @@ export default async function AdminCoursesPage() {
                       month: "short",
                     })}`}
                 </p>
-                <div className="flex items-center gap-4 mt-2">
+                <div className="flex items-center gap-4 mt-2 flex-wrap">
                   <Link href={`/admin/courses/${course.id}`} className="font-body text-sm text-[#0B1026] underline">
                     Edit
                   </Link>
+                  <DuplicateCourseButton courseId={course.id} />
                   <DeleteCourseButton courseId={course.id} courseTitle={course.title_en} />
                 </div>
               </div>
@@ -110,13 +112,16 @@ export default async function AdminCoursesPage() {
                         {course.is_published ? "Published" : "Draft"}
                       </span>
                     </td>
-                    <td className="px-5 py-3 text-right">
+                    <td className="px-5 py-3 text-right whitespace-nowrap">
                       <Link
                         href={`/admin/courses/${course.id}`}
                         className="font-body text-sm text-[#0B1026] underline mr-4"
                       >
                         Edit
                       </Link>
+                      <span className="mr-4">
+                        <DuplicateCourseButton courseId={course.id} />
+                      </span>
                       <DeleteCourseButton courseId={course.id} courseTitle={course.title_en} />
                     </td>
                   </tr>
