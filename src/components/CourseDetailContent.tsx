@@ -83,7 +83,7 @@ export default async function CourseDetailContent({
   return (
     <>
       <Header locale={locale} />
-      <main className="relative flex-1 bg-[#0b1026] pt-16 overflow-hidden">
+      <main className="relative min-h-screen flex-1 bg-[#0b1026] pt-16 overflow-hidden">
         <AscentEcho />
         <div className="relative z-10 max-w-5xl mx-auto px-6 py-16">
           {/* Breadcrumb (#3) */}

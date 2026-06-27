@@ -37,7 +37,7 @@ export default function CoursesPageIntro({
   const t = INTRO_STRINGS[locale];
 
   return (
-    <section className="relative overflow-hidden bg-[#0b1026] pt-32 pb-16 px-6">
+    <section className="relative min-h-[70vh] overflow-hidden bg-[#0b1026] pt-32 pb-16 px-6">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_30%,rgba(242,193,78,0.08),transparent_60%)]" />
       <svg
         viewBox="0 0 100 60"
