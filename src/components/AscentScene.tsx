@@ -30,10 +30,10 @@ function buildTrails(trailCount: number, convergingCount: number): Trail[] {
   return Array.from({ length: trailCount }, (_, i) => ({
     startX: (seededRandom(i * 12.9898) - 0.5) * 8,
     startZ: (seededRandom(i * 78.233) - 0.5) * 6 - 2,
-    speed: 0.6 + seededRandom(i * 37.71) * 0.8,
+    speed: 0.35 + seededRandom(i * 37.71) * 0.45,
     converges: i < convergingCount,
     phase: seededRandom(i * 5.12) * 10,
-    brightness: i < convergingCount ? 1 : 0.3 + seededRandom(i * 91.7) * 0.3,
+    brightness: i < convergingCount ? 0.7 : 0.18 + seededRandom(i * 91.7) * 0.2,
   }));
 }
 
@@ -70,9 +70,9 @@ function DustField() {
     const t = clock.elapsedTime;
     for (let i = 0; i < DUST_COUNT; i++) {
       // Very slow vertical drift, wrapping around, plus a tiny sideways sway.
-      const drift = ((t * 0.05 + seeds[i] * 8) % 8) - 4;
+      const drift = ((t * 0.03 + seeds[i] * 8) % 8) - 4;
       posAttr.array[i * 3 + 1] = drift;
-      posAttr.array[i * 3] = positions[i * 3] + Math.sin(t * 0.2 + seeds[i] * 10) * 0.1;
+      posAttr.array[i * 3] = positions[i * 3] + Math.sin(t * 0.12 + seeds[i] * 10) * 0.1;
     }
     posAttr.needsUpdate = true;
   });
@@ -80,7 +80,7 @@ function DustField() {
   return (
     // eslint-disable-next-line react/no-unknown-property
     <points ref={pointsRef} geometry={geometry}>
-      <pointsMaterial color="#8A93B8" size={0.018} transparent opacity={0.35} sizeAttenuation />
+      <pointsMaterial color="#8A93B8" size={0.018} transparent opacity={0.22} sizeAttenuation />
     </points>
   );
 }
@@ -95,7 +95,7 @@ function LightTrail({ trail, clockRef, glowTexture }: { trail: Trail; clockRef: 
       new THREE.LineBasicMaterial({
         color: trail.converges ? "#F2C14E" : "#8A93B8",
         transparent: true,
-        opacity: trail.brightness * 0.7,
+        opacity: trail.brightness * 0.55,
       }),
     [trail]
   );
@@ -222,24 +222,24 @@ function NorthStarPoint({
   useFrame(() => {
     const elapsed = clockRef.current;
     const fadeIn = Math.min(elapsed / 3, 1);
-    const pulse = 1 + Math.sin(elapsed * 1.5) * 0.08;
+    const pulse = 1 + Math.sin(elapsed * 1) * 0.05;
     // flareRef ramps from 0 to 1 once the headline becomes ready (see
     // Scene/AscentScene), giving the convergence point one extra moment
     // of brightness tied to the actual content appearing, not a timer.
     const flare = flareRef.current;
-    const flareBoost = 1 + flare * 0.6;
+    const flareBoost = 1 + flare * 0.5;
 
     if (meshRef.current) {
-      meshRef.current.scale.setScalar(pulse * fadeIn * flareBoost);
+      meshRef.current.scale.setScalar(pulse * fadeIn * flareBoost * 0.85);
     }
     if (haloRef.current) {
-      const haloPulse = 1 + Math.sin(elapsed * 1.5) * 0.15;
-      haloRef.current.scale.setScalar(haloPulse * fadeIn * (1 + flare * 0.9));
+      const haloPulse = 1 + Math.sin(elapsed * 1) * 0.1;
+      haloRef.current.scale.setScalar(haloPulse * fadeIn * (1 + flare * 0.7));
       (haloRef.current.material as THREE.MeshBasicMaterial).opacity =
-        0.25 * fadeIn + flare * 0.25;
+        0.16 * fadeIn + flare * 0.18;
     }
     if (lightRef.current) {
-      lightRef.current.intensity = (1.2 + flare * 1.5) * fadeIn;
+      lightRef.current.intensity = (0.8 + flare * 1.1) * fadeIn;
     }
   });
 
