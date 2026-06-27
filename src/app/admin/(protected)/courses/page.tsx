@@ -14,11 +14,11 @@ export default async function AdminCoursesPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
         <h1 className="font-display text-2xl text-[#0B1026]">Courses</h1>
         <Link
           href="/admin/courses/new"
-          className="inline-flex items-center gap-2 rounded-full bg-[#0B1026] text-white font-body text-sm font-medium px-4 py-2 hover:bg-[#1a2046] transition-colors"
+          className="inline-flex items-center justify-center gap-2 rounded-full bg-[#0B1026] text-white font-body text-sm font-medium px-4 py-2 hover:bg-[#1a2046] transition-colors w-fit"
         >
           <Plus size={16} />
           New course
@@ -32,62 +32,99 @@ export default async function AdminCoursesPage() {
           </p>
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-[#e5e3dc] overflow-hidden">
-          <table className="w-full text-left">
-            <thead className="bg-[#f7f6f3] border-b border-[#e5e3dc]">
-              <tr>
-                <th className="font-body text-xs uppercase tracking-wide text-[#888] px-5 py-3">Title</th>
-                <th className="font-body text-xs uppercase tracking-wide text-[#888] px-5 py-3">Price</th>
-                <th className="font-body text-xs uppercase tracking-wide text-[#888] px-5 py-3">Starts</th>
-                <th className="font-body text-xs uppercase tracking-wide text-[#888] px-5 py-3">Status</th>
-                <th className="px-5 py-3"></th>
-              </tr>
-            </thead>
-            <tbody>
-              {list.map((course) => (
-                <tr key={course.id} className="border-b border-[#f0eee8] last:border-0">
-                  <td className="px-5 py-3 font-body text-sm text-[#0B1026]">
-                    {course.title_en}
-                  </td>
-                  <td className="px-5 py-3 font-body text-sm text-[#555]">
-                    {course.price_amount
-                      ? `${course.price_amount} ${course.price_currency}`
-                      : "—"}
-                  </td>
-                  <td className="px-5 py-3 font-body text-sm text-[#555]">
-                    {course.start_date
-                      ? new Date(course.start_date).toLocaleDateString("en-GB", {
-                          day: "numeric",
-                          month: "short",
-                          year: "numeric",
-                        })
-                      : "—"}
-                  </td>
-                  <td className="px-5 py-3">
-                    <span
-                      className={`font-body text-xs rounded-full px-2.5 py-1 ${
-                        course.is_published
-                          ? "bg-green-100 text-green-700"
-                          : "bg-amber-100 text-amber-700"
-                      }`}
-                    >
-                      {course.is_published ? "Published" : "Draft"}
-                    </span>
-                  </td>
-                  <td className="px-5 py-3 text-right">
-                    <Link
-                      href={`/admin/courses/${course.id}`}
-                      className="font-body text-sm text-[#0B1026] underline mr-4"
-                    >
-                      Edit
-                    </Link>
-                    <DeleteCourseButton courseId={course.id} courseTitle={course.title_en} />
-                  </td>
+        <>
+          {/* Mobile: stacked cards */}
+          <div className="flex flex-col gap-3 sm:hidden">
+            {list.map((course) => (
+              <div key={course.id} className="bg-white rounded-xl border border-[#e5e3dc] p-4">
+                <div className="flex items-start justify-between gap-2 mb-2">
+                  <p className="font-body text-sm font-medium text-[#0B1026]">{course.title_en}</p>
+                  <span
+                    className={`font-body text-xs rounded-full px-2.5 py-1 shrink-0 ${
+                      course.is_published
+                        ? "bg-green-100 text-green-700"
+                        : "bg-amber-100 text-amber-700"
+                    }`}
+                  >
+                    {course.is_published ? "Published" : "Draft"}
+                  </span>
+                </div>
+                <p className="font-body text-sm text-[#555] mb-1">
+                  {course.price_amount ? `${course.price_amount} ${course.price_currency}` : "—"}
+                  {course.start_date &&
+                    ` · Starts ${new Date(course.start_date).toLocaleDateString("en-GB", {
+                      day: "numeric",
+                      month: "short",
+                    })}`}
+                </p>
+                <div className="flex items-center gap-4 mt-2">
+                  <Link href={`/admin/courses/${course.id}`} className="font-body text-sm text-[#0B1026] underline">
+                    Edit
+                  </Link>
+                  <DeleteCourseButton courseId={course.id} courseTitle={course.title_en} />
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop: table */}
+          <div className="hidden sm:block bg-white rounded-xl border border-[#e5e3dc] overflow-x-auto">
+            <table className="w-full text-left">
+              <thead className="bg-[#f7f6f3] border-b border-[#e5e3dc]">
+                <tr>
+                  <th className="font-body text-xs uppercase tracking-wide text-[#888] px-5 py-3">Title</th>
+                  <th className="font-body text-xs uppercase tracking-wide text-[#888] px-5 py-3">Price</th>
+                  <th className="font-body text-xs uppercase tracking-wide text-[#888] px-5 py-3">Starts</th>
+                  <th className="font-body text-xs uppercase tracking-wide text-[#888] px-5 py-3">Status</th>
+                  <th className="px-5 py-3"></th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {list.map((course) => (
+                  <tr key={course.id} className="border-b border-[#f0eee8] last:border-0">
+                    <td className="px-5 py-3 font-body text-sm text-[#0B1026]">
+                      {course.title_en}
+                    </td>
+                    <td className="px-5 py-3 font-body text-sm text-[#555]">
+                      {course.price_amount
+                        ? `${course.price_amount} ${course.price_currency}`
+                        : "—"}
+                    </td>
+                    <td className="px-5 py-3 font-body text-sm text-[#555]">
+                      {course.start_date
+                        ? new Date(course.start_date).toLocaleDateString("en-GB", {
+                            day: "numeric",
+                            month: "short",
+                            year: "numeric",
+                          })
+                        : "—"}
+                    </td>
+                    <td className="px-5 py-3">
+                      <span
+                        className={`font-body text-xs rounded-full px-2.5 py-1 ${
+                          course.is_published
+                            ? "bg-green-100 text-green-700"
+                            : "bg-amber-100 text-amber-700"
+                        }`}
+                      >
+                        {course.is_published ? "Published" : "Draft"}
+                      </span>
+                    </td>
+                    <td className="px-5 py-3 text-right">
+                      <Link
+                        href={`/admin/courses/${course.id}`}
+                        className="font-body text-sm text-[#0B1026] underline mr-4"
+                      >
+                        Edit
+                      </Link>
+                      <DeleteCourseButton courseId={course.id} courseTitle={course.title_en} />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
       )}
     </div>
   );

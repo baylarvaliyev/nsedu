@@ -23,7 +23,35 @@ export default async function AdminLeadsPage() {
           </p>
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-[#e5e3dc] overflow-hidden">
+        <>
+          {/* Mobile: stacked cards */}
+          <div className="flex flex-col gap-3 sm:hidden">
+            {list.map((lead) => (
+              <div key={lead.id} className="bg-white rounded-xl border border-[#e5e3dc] p-4">
+                <div className="flex items-start justify-between gap-2 mb-2">
+                  <p className="font-body text-sm font-medium text-[#0B1026]">{lead.full_name}</p>
+                  <LeadStatusSelect leadId={lead.id} currentStatus={lead.status} />
+                </div>
+                <p className="font-body text-sm text-[#555] mb-1">
+                  {lead.courses?.title_en || "—"}
+                </p>
+                <p className="font-body text-sm text-[#555] mb-1">
+                  {lead.phone}
+                  {lead.email ? ` · ${lead.email}` : ""}
+                </p>
+                <p className="font-body text-xs text-[#888]">
+                  {new Date(lead.created_at).toLocaleDateString("en-GB", {
+                    day: "numeric",
+                    month: "short",
+                    year: "numeric",
+                  })}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop: table */}
+          <div className="hidden sm:block bg-white rounded-xl border border-[#e5e3dc] overflow-x-auto">
           <table className="w-full text-left">
             <thead className="bg-[#f7f6f3] border-b border-[#e5e3dc]">
               <tr>
@@ -61,7 +89,8 @@ export default async function AdminLeadsPage() {
               ))}
             </tbody>
           </table>
-        </div>
+          </div>
+        </>
       )}
     </div>
   );

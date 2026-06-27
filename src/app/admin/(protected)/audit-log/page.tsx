@@ -30,7 +30,7 @@ export default async function AdminAuditLogPage() {
           <p className="font-body text-sm text-[#888]">No activity recorded yet.</p>
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-[#e5e3dc] overflow-hidden">
+        <div className="bg-white rounded-xl border border-[#e5e3dc] overflow-x-auto">
           <table className="w-full text-left">
             <thead className="bg-[#f7f6f3] border-b border-[#e5e3dc]">
               <tr>
