@@ -20,6 +20,7 @@ export default function Hero({
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#0b1026]">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_40%,rgba(242,193,78,0.1),transparent_60%)]" />
       <div className="absolute top-6 right-6 z-20">
         <LanguageSwitcher currentLocale={locale} />
       </div>
