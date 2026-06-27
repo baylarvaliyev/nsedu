@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import LeadStatusSelect from "@/components/admin/LeadStatusSelect";
 
 export default async function AdminLeadsPage() {
   const supabase = await createClient();
@@ -29,6 +30,7 @@ export default async function AdminLeadsPage() {
                 <th className="font-body text-xs uppercase tracking-wide text-[#888] px-5 py-3">Name</th>
                 <th className="font-body text-xs uppercase tracking-wide text-[#888] px-5 py-3">Course</th>
                 <th className="font-body text-xs uppercase tracking-wide text-[#888] px-5 py-3">Contact</th>
+                <th className="font-body text-xs uppercase tracking-wide text-[#888] px-5 py-3">Status</th>
                 <th className="font-body text-xs uppercase tracking-wide text-[#888] px-5 py-3">Date</th>
               </tr>
             </thead>
@@ -44,6 +46,9 @@ export default async function AdminLeadsPage() {
                   <td className="px-5 py-3 font-body text-sm text-[#555]">
                     {lead.phone}
                     {lead.email ? ` · ${lead.email}` : ""}
+                  </td>
+                  <td className="px-5 py-3">
+                    <LeadStatusSelect leadId={lead.id} currentStatus={lead.status} />
                   </td>
                   <td className="px-5 py-3 font-body text-sm text-[#888]">
                     {new Date(lead.created_at).toLocaleDateString("en-GB", {

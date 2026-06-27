@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import ApplicationStatusSelect from "@/components/admin/ApplicationStatusSelect";
 
 export default async function AdminApplicationsPage() {
   const supabase = await createClient();
@@ -23,13 +24,16 @@ export default async function AdminApplicationsPage() {
             <div key={app.id} className="bg-white rounded-xl border border-[#e5e3dc] p-5">
               <div className="flex items-center justify-between mb-2">
                 <p className="font-display text-base text-[#0B1026]">{app.full_name}</p>
-                <p className="font-body text-xs text-[#888]">
-                  {new Date(app.created_at).toLocaleDateString("en-GB", {
-                    day: "numeric",
-                    month: "short",
-                    year: "numeric",
-                  })}
-                </p>
+                <div className="flex items-center gap-3">
+                  <ApplicationStatusSelect applicationId={app.id} currentStatus={app.status} />
+                  <p className="font-body text-xs text-[#888]">
+                    {new Date(app.created_at).toLocaleDateString("en-GB", {
+                      day: "numeric",
+                      month: "short",
+                      year: "numeric",
+                    })}
+                  </p>
+                </div>
               </div>
               <p className="font-body text-sm text-[#555] mb-1">
                 Applying for: <span className="font-medium text-[#0B1026]">{app.job_title_snapshot || "—"}</span>
