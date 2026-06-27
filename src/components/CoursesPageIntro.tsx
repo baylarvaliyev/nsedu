@@ -3,7 +3,6 @@
 import { motion } from "framer-motion";
 import { generateOrganicStars } from "@/lib/stars";
 import type { Locale } from "@/lib/locale";
-import AscentEcho from "./AscentEcho";
 
 const AMBIENT_STARS = generateOrganicStars(40);
 
@@ -57,11 +56,7 @@ export default function CoursesPageIntro({
         ))}
       </svg>
 
-      <div className="absolute inset-0 pointer-events-none">
-        <AscentEcho />
-      </div>
-
-      <div className="relative z-10 max-w-3xl mx-auto text-center">
+            <div className="relative z-10 max-w-3xl mx-auto text-center">
         <motion.p
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
@@ -110,3 +105,5 @@ export default function CoursesPageIntro({
     </section>
   );
 }
+
+
