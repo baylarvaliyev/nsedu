@@ -12,6 +12,7 @@ import {
   Briefcase,
   Users,
   Inbox,
+  History,
   LogOut,
 } from "lucide-react";
 
@@ -27,6 +28,7 @@ const NAV_ITEMS: { href: string; label: string; icon: typeof BookOpen; ownerOnly
   { href: "/admin/faq", label: "FAQ", icon: HelpCircle, ownerOnly: true },
   { href: "/admin/certificates", label: "Certificates", icon: Award, ownerOnly: true },
   { href: "/admin/staff", label: "Staff", icon: Users, ownerOnly: true },
+  { href: "/admin/audit-log", label: "Audit Log", icon: History, ownerOnly: true },
 ];
 
 export default function AdminShell({

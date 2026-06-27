@@ -3,8 +3,15 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { logAdminAction } from "@/lib/auditLog";
 
-export default function DeleteCourseButton({ courseId }: { courseId: string }) {
+export default function DeleteCourseButton({
+  courseId,
+  courseTitle,
+}: {
+  courseId: string;
+  courseTitle?: string;
+}) {
   const router = useRouter();
   const [deleting, setDeleting] = useState(false);
 
@@ -23,6 +30,13 @@ export default function DeleteCourseButton({ courseId }: { courseId: string }) {
       alert("Couldn't delete course: " + error.message);
       return;
     }
+
+    logAdminAction({
+      action: "delete",
+      resourceType: "course",
+      resourceId: courseId,
+      resourceLabel: courseTitle,
+    });
 
     router.refresh();
   }

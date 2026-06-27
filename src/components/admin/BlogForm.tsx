@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { logAdminAction } from "@/lib/auditLog";
 
 const inputClass =
   "w-full rounded-lg border border-[#ddd] px-3 py-2 font-body text-sm text-[#0B1026] focus:outline-none focus:border-[#0B1026]/40";
@@ -129,6 +130,13 @@ export default function BlogForm({ initial }: { initial?: Partial<BlogFormValues
       );
       return;
     }
+
+    logAdminAction({
+      action: values.id ? "update" : "create",
+      resourceType: "blog_post",
+      resourceId: values.id,
+      resourceLabel: payload.title_en,
+    });
 
     router.push("/admin/blog");
     router.refresh();

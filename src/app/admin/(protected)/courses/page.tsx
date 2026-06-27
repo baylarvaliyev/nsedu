@@ -81,7 +81,7 @@ export default async function AdminCoursesPage() {
                     >
                       Edit
                     </Link>
-                    <DeleteCourseButton courseId={course.id} />
+                    <DeleteCourseButton courseId={course.id} courseTitle={course.title_en} />
                   </td>
                 </tr>
               ))}

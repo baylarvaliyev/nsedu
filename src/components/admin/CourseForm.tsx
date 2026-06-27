@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import ImageUpload from "./ImageUpload";
+import { logAdminAction } from "@/lib/auditLog";
 
 type Category = { id: string; name_en: string };
 
@@ -166,6 +167,13 @@ export default function CourseForm({
       }
       return;
     }
+
+    logAdminAction({
+      action: values.id ? "update" : "create",
+      resourceType: "course",
+      resourceId: values.id,
+      resourceLabel: payload.title_en,
+    });
 
     router.push("/admin/courses");
     router.refresh();
