@@ -3,13 +3,14 @@ import Link from "next/link";
 import { Plus } from "lucide-react";
 import DeleteCourseButton from "@/components/admin/DeleteCourseButton";
 import DuplicateCourseButton from "@/components/admin/DuplicateCourseButton";
+import CourseReorderButtons from "@/components/admin/CourseReorderButtons";
 
 export default async function AdminCoursesPage() {
   const supabase = await createClient();
   const { data: courses } = await supabase
     .from("courses")
-    .select("id, slug, title_en, price_amount, price_currency, start_date, is_published")
-    .order("created_at", { ascending: false });
+    .select("id, slug, title_en, price_amount, price_currency, start_date, is_published, display_order")
+    .order("display_order", { ascending: true });
 
   const list = courses ?? [];
 
@@ -36,7 +37,7 @@ export default async function AdminCoursesPage() {
         <>
           {/* Mobile: stacked cards */}
           <div className="flex flex-col gap-3 sm:hidden">
-            {list.map((course) => (
+            {list.map((course, index) => (
               <div key={course.id} className="bg-white rounded-xl border border-[#e5e3dc] p-4">
                 <div className="flex items-start justify-between gap-2 mb-2">
                   <p className="font-body text-sm font-medium text-[#0B1026]">{course.title_en}</p>
@@ -59,6 +60,7 @@ export default async function AdminCoursesPage() {
                     })}`}
                 </p>
                 <div className="flex items-center gap-4 mt-2 flex-wrap">
+                  <CourseReorderButtons courses={list} index={index} />
                   <Link href={`/admin/courses/${course.id}`} className="font-body text-sm text-[#0B1026] underline">
                     Edit
                   </Link>
@@ -74,6 +76,7 @@ export default async function AdminCoursesPage() {
             <table className="w-full text-left">
               <thead className="bg-[#f7f6f3] border-b border-[#e5e3dc]">
                 <tr>
+                  <th className="px-5 py-3"></th>
                   <th className="font-body text-xs uppercase tracking-wide text-[#888] px-5 py-3">Title</th>
                   <th className="font-body text-xs uppercase tracking-wide text-[#888] px-5 py-3">Price</th>
                   <th className="font-body text-xs uppercase tracking-wide text-[#888] px-5 py-3">Starts</th>
@@ -82,8 +85,11 @@ export default async function AdminCoursesPage() {
                 </tr>
               </thead>
               <tbody>
-                {list.map((course) => (
+                {list.map((course, index) => (
                   <tr key={course.id} className="border-b border-[#f0eee8] last:border-0">
+                    <td className="px-5 py-3">
+                      <CourseReorderButtons courses={list} index={index} />
+                    </td>
                     <td className="px-5 py-3 font-body text-sm text-[#0B1026]">
                       {course.title_en}
                     </td>

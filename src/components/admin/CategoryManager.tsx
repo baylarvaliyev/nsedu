@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { Trash2, Pencil, X } from "lucide-react";
+import { Trash2, Pencil, X, ChevronUp, ChevronDown } from "lucide-react";
 import ImageUpload from "./ImageUpload";
 
 type Category = {
@@ -169,6 +169,22 @@ export default function CategoryManager({
     router.refresh();
   }
 
+  async function handleMove(index: number, direction: "up" | "down") {
+    const targetIndex = direction === "up" ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= initialCategories.length) return;
+
+    const current = initialCategories[index];
+    const target = initialCategories[targetIndex];
+
+    const supabase = createClient();
+    // Swap display_order between the two adjacent categories.
+    await Promise.all([
+      supabase.from("categories").update({ display_order: target.display_order }).eq("id", current.id),
+      supabase.from("categories").update({ display_order: current.display_order }).eq("id", target.id),
+    ]);
+    router.refresh();
+  }
+
   return (
     <div className="max-w-2xl">
       <form
@@ -197,7 +213,7 @@ export default function CategoryManager({
         <p className="font-body text-sm text-[#888]">No categories yet.</p>
       ) : (
         <div className="bg-white rounded-xl border border-[#e5e3dc] overflow-hidden">
-          {initialCategories.map((cat) => (
+          {initialCategories.map((cat, index) => (
             <div key={cat.id} className="px-5 py-4 border-b border-[#f0eee8] last:border-0">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1">
@@ -212,6 +228,24 @@ export default function CategoryManager({
                   />
                 </div>
                 <div className="flex items-center gap-3 shrink-0">
+                  <div className="flex flex-col">
+                    <button
+                      onClick={() => handleMove(index, "up")}
+                      disabled={index === 0}
+                      className="text-[#888] hover:text-[#0B1026] disabled:opacity-30 disabled:cursor-not-allowed"
+                      aria-label="Move up"
+                    >
+                      <ChevronUp size={16} />
+                    </button>
+                    <button
+                      onClick={() => handleMove(index, "down")}
+                      disabled={index === initialCategories.length - 1}
+                      className="text-[#888] hover:text-[#0B1026] disabled:opacity-30 disabled:cursor-not-allowed"
+                      aria-label="Move down"
+                    >
+                      <ChevronDown size={16} />
+                    </button>
+                  </div>
                   <button
                     onClick={() => setEditingId(editingId === cat.id ? null : cat.id)}
                     className="text-[#0B1026] hover:text-[#1a2046]"

@@ -1,12 +1,18 @@
 "use client";
 
 import { motion } from "framer-motion";
+import dynamic from "next/dynamic";
 import { generateOrganicStars } from "@/lib/stars";
 import type { Locale } from "@/lib/locale";
 import { localizedPath } from "@/lib/locale";
 import { UI_STRINGS } from "@/lib/uiStrings";
 import LanguageSwitcher from "./LanguageSwitcher";
-import AscentScene from "./AscentScene";
+
+// Loaded only after the page is interactive, never server-rendered — this
+// is a heavy Three.js bundle, and on mobile it was likely the main cause
+// of clicks feeling unresponsive for several seconds after page load,
+// since all of this JS used to block before nav links became clickable.
+const AscentScene = dynamic(() => import("./AscentScene"), { ssr: false });
 
 const AMBIENT_STARS = generateOrganicStars(90);
 
