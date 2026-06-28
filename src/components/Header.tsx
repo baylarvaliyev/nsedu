@@ -46,7 +46,7 @@ export default function Header({ locale = "en" as Locale }: { locale?: Locale })
           <LanguageSwitcher currentLocale={locale} />
           <a
             href={contactHref}
-            className="font-body text-sm font-semibold rounded-full bg-[#F2C14E] text-[#0B1026] px-5 py-2 hover:bg-[#f5cd6b] transition-colors"
+            className="font-body text-sm font-semibold rounded-full bg-[#F2C14E] text-[#0B1026] px-5 py-2 hover:bg-[#f5cd6b] active:scale-95 transition-all"
           >
             {t.nav_apply}
           </a>
@@ -82,7 +82,7 @@ export default function Header({ locale = "en" as Locale }: { locale?: Locale })
           <a
             href={contactHref}
             onClick={() => setOpen(false)}
-            className="font-body text-sm font-semibold rounded-full bg-[#F2C14E] text-[#0B1026] px-5 py-2 text-center hover:bg-[#f5cd6b] transition-colors"
+            className="font-body text-sm font-semibold rounded-full bg-[#F2C14E] text-[#0B1026] px-5 py-2 text-center hover:bg-[#f5cd6b] active:scale-95 transition-all"
           >
             {t.nav_apply}
           </a>

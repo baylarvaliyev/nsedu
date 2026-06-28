@@ -1,9 +1,9 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Loader2 } from "lucide-react";
 import type { Course, Category } from "./CourseCatalog";
 import type { Locale } from "@/lib/locale";
 import { localized, localizedPath, daysUntil } from "@/lib/locale";
@@ -75,6 +75,7 @@ export default function CourseCatalogClient({
   const activeSlug = searchParams.get("category");
   const t = CATALOG_STRINGS[locale];
   const contactHref = `${localizedPath("/courses", locale)}#contact`;
+  const [isPending, startTransition] = useTransition();
 
   const coursesByCategory = useMemo(() => {
     const map = new Map<string, Course[]>();
@@ -105,15 +106,26 @@ export default function CourseCatalogClient({
       params.delete("category");
     }
     const basePath = localizedPath("/courses", locale);
-    router.push(`${basePath}?${params.toString()}#courses`, { scroll: false });
+    // useTransition marks this navigation as a low-priority update React
+    // can show pending state for immediately (isPending flips true on the
+    // very next paint), instead of the click appearing to do nothing
+    // until the URL/state update has fully finished.
+    startTransition(() => {
+      router.push(`${basePath}?${params.toString()}#courses`, { scroll: false });
+    });
   }
 
   return (
     <section id="courses" className="relative z-10 py-24 px-6">
       <div className="max-w-6xl mx-auto">
-        <p className="font-body text-xs uppercase tracking-[0.3em] text-[#8A93B8] mb-4">
-          {t.eyebrow}
-        </p>
+        <div className="flex items-center justify-between mb-4">
+          <p className="font-body text-xs uppercase tracking-[0.3em] text-[#8A93B8]">
+            {t.eyebrow}
+          </p>
+          {isPending && (
+            <Loader2 size={16} className="text-[#8A93B8] animate-spin" />
+          )}
+        </div>
 
         {showingCourseList ? (
           <>
@@ -168,6 +180,7 @@ export default function CourseCatalogClient({
                         viewport={{ once: true }}
                         transition={{ duration: 0.5, delay: Math.min(index * 0.08, 0.4) }}
                         whileHover={{ y: -4 }}
+                        whileTap={{ scale: 0.97 }}
                         onClick={() => selectCategory(cat.slug)}
                         className="group text-left rounded-2xl border border-[#8A93B8]/15 bg-[#0f1530] overflow-hidden hover:border-[#F2C14E]/40 transition-colors"
                       >
@@ -234,6 +247,7 @@ export default function CourseCatalogClient({
                       viewport={{ once: true }}
                       transition={{ duration: 0.5, delay: Math.min(index * 0.06, 0.4) }}
                       whileHover={{ y: -4 }}
+                      whileTap={{ scale: 0.97 }}
                       href={localizedPath(`/courses/${course.slug}`, locale)}
                       className="group relative rounded-2xl border border-[#8A93B8]/15 bg-[#0f1530] overflow-hidden hover:border-[#F2C14E]/40 transition-colors flex flex-col"
                     >

@@ -49,24 +49,26 @@ export default async function CourseDetailContent({
     notFound();
   }
 
-  // Other published courses in the same category, excluding this one —
-  // for the "related courses" section (#4). Only fetched when a category
-  // exists, since uncategorized courses have nothing meaningful to relate to.
-  const { data: relatedCourses } = course.category_id
-    ? await supabase
-        .from("courses")
-        .select("id, slug, title_az, title_en, title_ru, price_amount, price_currency, cover_image_url")
-        .eq("category_id", course.category_id)
-        .eq("is_published", true)
-        .neq("id", course.id)
-        .limit(3)
-    : { data: [] };
-
-  const { data: courseFaq } = await supabase
-    .from("course_faq_items")
-    .select("*")
-    .eq("course_id", course.id)
-    .order("display_order");
+  // Related courses and the course FAQ have no dependency on each other —
+  // only on the course itself, which we already have. Running them in
+  // parallel instead of one after another removes an unnecessary extra
+  // network round-trip on every single course page load.
+  const [{ data: relatedCourses }, { data: courseFaq }] = await Promise.all([
+    course.category_id
+      ? supabase
+          .from("courses")
+          .select("id, slug, title_az, title_en, title_ru, price_amount, price_currency, cover_image_url")
+          .eq("category_id", course.category_id)
+          .eq("is_published", true)
+          .neq("id", course.id)
+          .limit(3)
+      : Promise.resolve({ data: [] as never[] }),
+    supabase
+      .from("course_faq_items")
+      .select("*")
+      .eq("course_id", course.id)
+      .order("display_order"),
+  ]);
 
   const t = COURSE_STRINGS[locale];
   const dateLocale = locale === "ru" ? "ru-RU" : locale === "az" ? "az-AZ" : "en-GB";
