@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { Upload, X } from "lucide-react";
+import { Upload, X, RefreshCw } from "lucide-react";
 
 export default function ImageUpload({
   value,
@@ -58,14 +58,28 @@ export default function ImageUpload({
         <div className="relative w-full max-w-xs">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={value} alt="" className="w-full rounded-lg border border-[#ddd] object-cover" />
-          <button
-            type="button"
-            onClick={() => onChange(null)}
-            className="absolute top-2 right-2 bg-black/60 text-white rounded-full p-1 hover:bg-black/80"
-            aria-label="Remove image"
-          >
-            <X size={14} />
-          </button>
+          <div className="absolute top-2 right-2 flex gap-1">
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploading}
+              className="bg-black/60 text-white rounded-full p-1 hover:bg-black/80 disabled:opacity-60"
+              aria-label="Replace image"
+              title="Replace image"
+            >
+              <RefreshCw size={14} className={uploading ? "animate-spin" : ""} />
+            </button>
+            <button
+              type="button"
+              onClick={() => onChange(null)}
+              disabled={uploading}
+              className="bg-black/60 text-white rounded-full p-1 hover:bg-black/80 disabled:opacity-60"
+              aria-label="Remove image"
+              title="Remove image"
+            >
+              <X size={14} />
+            </button>
+          </div>
         </div>
       ) : (
         <button
