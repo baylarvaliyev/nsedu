@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Reorder, useDragControls } from "framer-motion";
 import { createClient } from "@/lib/supabase/client";
-import { Trash2, Pencil, X, ChevronUp, ChevronDown } from "lucide-react";
+import { Trash2, Pencil, X, GripVertical } from "lucide-react";
 import ImageUpload from "./ImageUpload";
 
 type Category = {
@@ -97,6 +98,71 @@ function CategoryEditRow({ cat }: { cat: Category }) {
   );
 }
 
+function CategoryRow({
+  cat,
+  editingId,
+  setEditingId,
+  handleDelete,
+  updateCategoryImage,
+}: {
+  cat: Category;
+  editingId: string | null;
+  setEditingId: (id: string | null) => void;
+  handleDelete: (id: string) => void;
+  updateCategoryImage: (id: string, url: string | null) => void;
+}) {
+  const dragControls = useDragControls();
+
+  return (
+    <Reorder.Item
+      value={cat}
+      dragListener={false}
+      dragControls={dragControls}
+      className="px-5 py-4 border-b border-[#f0eee8] last:border-0 bg-white"
+    >
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex items-start gap-3 flex-1">
+          <button
+            onPointerDown={(e) => dragControls.start(e)}
+            className="cursor-grab active:cursor-grabbing text-[#bbb] hover:text-[#888] mt-1 touch-none"
+            aria-label="Drag to reorder"
+          >
+            <GripVertical size={18} />
+          </button>
+          <div className="flex-1">
+            <p className="font-body text-sm text-[#0B1026]">{cat.name_en}</p>
+            <p className="font-body text-xs text-[#888] mb-3">
+              {cat.name_az} · {cat.name_ru}
+            </p>
+            <ImageUpload
+              value={cat.cover_image_url}
+              onChange={(url) => updateCategoryImage(cat.id, url)}
+              folder="categories"
+            />
+          </div>
+        </div>
+        <div className="flex items-center gap-3 shrink-0">
+          <button
+            onClick={() => setEditingId(editingId === cat.id ? null : cat.id)}
+            className="text-[#0B1026] hover:text-[#1a2046]"
+            aria-label="Edit category"
+          >
+            {editingId === cat.id ? <X size={16} /> : <Pencil size={16} />}
+          </button>
+          <button
+            onClick={() => handleDelete(cat.id)}
+            className="text-red-600 hover:text-red-700"
+            aria-label="Delete category"
+          >
+            <Trash2 size={16} />
+          </button>
+        </div>
+      </div>
+      {editingId === cat.id && <CategoryEditRow cat={cat} />}
+    </Reorder.Item>
+  );
+}
+
 export default function CategoryManager({
   initialCategories,
 }: {
@@ -109,6 +175,19 @@ export default function CategoryManager({
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
+  // Local copy so dragging can reorder instantly in the UI before the
+  // database write (which happens on drop, not on every frame of the drag)
+  // has confirmed. Re-synced from props whenever the server data changes
+  // (e.g. after add/delete triggers router.refresh()).
+  const [orderedCategories, setOrderedCategories] = useState(initialCategories);
+  if (
+    orderedCategories.length !== initialCategories.length ||
+    orderedCategories.some((c, i) => c.id !== initialCategories[i]?.id)
+  ) {
+    // initialCategories changed identity/order from the server (add,
+    // delete, or another tab's edit) — adopt it as the new baseline.
+    setOrderedCategories(initialCategories);
+  }
 
   async function handleAdd(e: React.FormEvent) {
     e.preventDefault();
@@ -169,19 +248,18 @@ export default function CategoryManager({
     router.refresh();
   }
 
-  async function handleMove(index: number, direction: "up" | "down") {
-    const targetIndex = direction === "up" ? index - 1 : index + 1;
-    if (targetIndex < 0 || targetIndex >= initialCategories.length) return;
-
-    const current = initialCategories[index];
-    const target = initialCategories[targetIndex];
-
+  async function handleReorder(newOrder: Category[]) {
+    setOrderedCategories(newOrder);
     const supabase = createClient();
-    // Swap display_order between the two adjacent categories.
-    await Promise.all([
-      supabase.from("categories").update({ display_order: target.display_order }).eq("id", current.id),
-      supabase.from("categories").update({ display_order: current.display_order }).eq("id", target.id),
-    ]);
+    // Re-number sequentially to match the new visual order. One update
+    // per changed item; cheap since category lists are short.
+    await Promise.all(
+      newOrder.map((cat, index) =>
+        cat.display_order === index
+          ? null
+          : supabase.from("categories").update({ display_order: index }).eq("id", cat.id)
+      )
+    );
     router.refresh();
   }
 
@@ -209,63 +287,26 @@ export default function CategoryManager({
         </button>
       </form>
 
-      {initialCategories.length === 0 ? (
+      {orderedCategories.length === 0 ? (
         <p className="font-body text-sm text-[#888]">No categories yet.</p>
       ) : (
-        <div className="bg-white rounded-xl border border-[#e5e3dc] overflow-hidden">
-          {initialCategories.map((cat, index) => (
-            <div key={cat.id} className="px-5 py-4 border-b border-[#f0eee8] last:border-0">
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex-1">
-                  <p className="font-body text-sm text-[#0B1026]">{cat.name_en}</p>
-                  <p className="font-body text-xs text-[#888] mb-3">
-                    {cat.name_az} · {cat.name_ru}
-                  </p>
-                  <ImageUpload
-                    value={cat.cover_image_url}
-                    onChange={(url) => updateCategoryImage(cat.id, url)}
-                    folder="categories"
-                  />
-                </div>
-                <div className="flex items-center gap-3 shrink-0">
-                  <div className="flex flex-col">
-                    <button
-                      onClick={() => handleMove(index, "up")}
-                      disabled={index === 0}
-                      className="text-[#888] hover:text-[#0B1026] disabled:opacity-30 disabled:cursor-not-allowed"
-                      aria-label="Move up"
-                    >
-                      <ChevronUp size={16} />
-                    </button>
-                    <button
-                      onClick={() => handleMove(index, "down")}
-                      disabled={index === initialCategories.length - 1}
-                      className="text-[#888] hover:text-[#0B1026] disabled:opacity-30 disabled:cursor-not-allowed"
-                      aria-label="Move down"
-                    >
-                      <ChevronDown size={16} />
-                    </button>
-                  </div>
-                  <button
-                    onClick={() => setEditingId(editingId === cat.id ? null : cat.id)}
-                    className="text-[#0B1026] hover:text-[#1a2046]"
-                    aria-label="Edit category"
-                  >
-                    {editingId === cat.id ? <X size={16} /> : <Pencil size={16} />}
-                  </button>
-                  <button
-                    onClick={() => handleDelete(cat.id)}
-                    className="text-red-600 hover:text-red-700"
-                    aria-label="Delete category"
-                  >
-                    <Trash2 size={16} />
-                  </button>
-                </div>
-              </div>
-              {editingId === cat.id && <CategoryEditRow cat={cat} />}
-            </div>
+        <Reorder.Group
+          axis="y"
+          values={orderedCategories}
+          onReorder={handleReorder}
+          className="bg-white rounded-xl border border-[#e5e3dc] overflow-hidden"
+        >
+          {orderedCategories.map((cat) => (
+            <CategoryRow
+              key={cat.id}
+              cat={cat}
+              editingId={editingId}
+              setEditingId={setEditingId}
+              handleDelete={handleDelete}
+              updateCategoryImage={updateCategoryImage}
+            />
           ))}
-        </div>
+        </Reorder.Group>
       )}
     </div>
   );
