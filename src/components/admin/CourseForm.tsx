@@ -52,6 +52,7 @@ export type CourseFormValues = {
   is_published: boolean;
   cover_image_url: string | null;
   level: string;
+  is_featured: boolean;
   who_for_az: string;
   who_for_en: string;
   who_for_ru: string;
@@ -80,6 +81,7 @@ const EMPTY: CourseFormValues = {
   is_published: false,
   cover_image_url: null,
   level: "",
+  is_featured: false,
   who_for_az: "",
   who_for_en: "",
   who_for_ru: "",
@@ -169,6 +171,7 @@ export default function CourseForm({
       is_published: values.is_published,
       cover_image_url: values.cover_image_url,
       level: values.level.trim() || null,
+      is_featured: values.is_featured,
       who_for_az: values.who_for_az.trim() || null,
       who_for_en: values.who_for_en.trim() || null,
       who_for_ru: values.who_for_ru.trim() || null,
@@ -479,7 +482,7 @@ export default function CourseForm({
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-[#e5e3dc] p-6 mb-6">
+      <div className="bg-white rounded-xl border border-[#e5e3dc] p-6 mb-6 space-y-3">
         <label className="flex items-center gap-3 cursor-pointer">
           <input
             type="checkbox"
@@ -489,6 +492,17 @@ export default function CourseForm({
           />
           <span className="font-body text-sm text-[#0B1026]">
             Published (visible on the public site)
+          </span>
+        </label>
+        <label className="flex items-center gap-3 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={values.is_featured}
+            onChange={(e) => update("is_featured", e.target.checked)}
+            className="w-4 h-4"
+          />
+          <span className="font-body text-sm text-[#0B1026]">
+            Featured (shown bigger at the top of the catalog, and in a dedicated section on the homepage — use for bootcamps or anything you want to highlight)
           </span>
         </label>
       </div>

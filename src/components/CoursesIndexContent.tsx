@@ -40,7 +40,7 @@ export default async function CoursesIndexContent({
     supabase
       .from("courses")
       .select(
-        "id, slug, title_az, title_en, title_ru, description_az, description_en, description_ru, cover_image_url, price_amount, original_price_amount, price_currency, start_date, category_id, level"
+        "id, slug, title_az, title_en, title_ru, description_az, description_en, description_ru, cover_image_url, price_amount, original_price_amount, price_currency, start_date, category_id, level, is_featured"
       )
       .eq("is_published", true)
       .order("display_order", { ascending: true }),

@@ -19,6 +19,7 @@ export type Course = {
   start_date: string | null;
   category_id: string | null;
   level: string | null;
+  is_featured: boolean;
 };
 
 export type Category = {

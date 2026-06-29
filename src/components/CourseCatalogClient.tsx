@@ -33,6 +33,7 @@ const CATALOG_STRINGS = {
     empty_catalog_post: "about what's coming up.",
     empty_category: "No courses in this category yet.",
     starts: "Starts",
+    featured: "Featured Programs",
   },
   az: {
     eyebrow: "Kurslar",
@@ -46,6 +47,7 @@ const CATALOG_STRINGS = {
     empty_catalog_post: "— sizə kömək etməkdən şad olarıq.",
     empty_category: "Bu kateqoriyada hələ kurs yoxdur.",
     starts: "Başlama tarixi",
+    featured: "Seçilmiş Proqramlar",
   },
   ru: {
     eyebrow: "Курсы",
@@ -59,6 +61,7 @@ const CATALOG_STRINGS = {
     empty_catalog_post: "о том, что скоро появится.",
     empty_category: "В этой категории пока нет курсов.",
     starts: "Старт",
+    featured: "Избранные программы",
   },
 } as const;
 
@@ -100,6 +103,8 @@ export default function CourseCatalogClient({
     ? uncategorizedCourses
     : [];
 
+  const featuredCourses = useMemo(() => courses.filter((c) => c.is_featured), [courses]);
+
   function selectCategory(slug: string | null, clickId?: string) {
     setClickedId(clickId ?? null);
     const params = new URLSearchParams(window.location.search);
@@ -129,6 +134,72 @@ export default function CourseCatalogClient({
             <Loader2 size={16} className="text-[#8A93B8] animate-spin" />
           )}
         </div>
+
+        {!showingCourseList && featuredCourses.length > 0 && (
+          <div className="mb-16">
+            <h2 className="font-display text-2xl sm:text-3xl text-[#F5F3EE] mb-6">
+              {t.featured}
+            </h2>
+            <div className="grid sm:grid-cols-2 gap-6">
+              {featuredCourses.map((course) => {
+                const title = localized(course, "title", locale);
+                const description = localized(course, "description", locale);
+                return (
+                  <motion.a
+                    key={course.id}
+                    initial={{ opacity: 0, y: 16 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5 }}
+                    whileHover={{ y: -4 }}
+                    whileTap={{ scale: 0.97 }}
+                    href={localizedPath(`/courses/${course.slug}`, locale)}
+                    className="group relative rounded-2xl border-2 border-[#F2C14E]/50 bg-[#0f1530] overflow-hidden hover:border-[#F2C14E] active:border-[#F2C14E] active:bg-[#1a2046] transition-all duration-150 flex flex-col"
+                  >
+                    <span className="absolute top-4 left-4 z-10 rounded-full bg-[#F2C14E] text-[#0B1026] text-xs font-body font-semibold px-3 py-1 uppercase tracking-wide">
+                      {t.featured}
+                    </span>
+                    {course.cover_image_url && (
+                      <div className="relative w-full aspect-[1000/380]">
+                        <Image
+                          src={course.cover_image_url}
+                          alt=""
+                          fill
+                          sizes="(max-width: 768px) 100vw, 50vw"
+                          className="object-cover"
+                        />
+                      </div>
+                    )}
+                    <div className="p-8 flex flex-col flex-1">
+                      <h3 className="font-display text-2xl text-[#F5F3EE] group-hover:text-[#F2C14E] transition-colors mb-3">
+                        {title}
+                      </h3>
+                      {description && (
+                        <p className="font-body text-base text-[#8A93B8] mb-6 line-clamp-3">
+                          {description}
+                        </p>
+                      )}
+                      <div className="mt-auto flex items-center justify-between pt-4 border-t border-[#8A93B8]/10">
+                        {course.price_amount && (
+                          <span className="flex items-baseline gap-2">
+                            {course.original_price_amount && course.original_price_amount > course.price_amount && (
+                              <span className="font-body text-sm text-[#8A93B8] line-through">
+                                {course.original_price_amount} {course.price_currency}
+                              </span>
+                            )}
+                            <span className="font-body text-lg font-semibold text-[#F2C14E]">
+                              {course.price_amount} {course.price_currency}
+                            </span>
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </motion.a>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         {showingCourseList ? (
           <>

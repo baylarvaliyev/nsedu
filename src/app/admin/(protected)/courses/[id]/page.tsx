@@ -52,6 +52,7 @@ export default async function EditCoursePage({
           is_published: course.is_published ?? false,
           cover_image_url: course.cover_image_url ?? null,
           level: course.level ?? "",
+          is_featured: course.is_featured ?? false,
           who_for_az: course.who_for_az ?? "",
           who_for_en: course.who_for_en ?? "",
           who_for_ru: course.who_for_ru ?? "",
