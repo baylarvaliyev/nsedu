@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useTransition } from "react";
+import { useMemo, useState, useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import Image from "next/image";
@@ -77,6 +77,7 @@ export default function CourseCatalogClient({
   const t = CATALOG_STRINGS[locale];
   const contactHref = `${localizedPath("/courses", locale)}#contact`;
   const [isPending, startTransition] = useTransition();
+  const [clickedId, setClickedId] = useState<string | null>(null);
 
   const coursesByCategory = useMemo(() => {
     const map = new Map<string, Course[]>();
@@ -99,7 +100,8 @@ export default function CourseCatalogClient({
     ? uncategorizedCourses
     : [];
 
-  function selectCategory(slug: string | null) {
+  function selectCategory(slug: string | null, clickId?: string) {
+    setClickedId(clickId ?? null);
     const params = new URLSearchParams(window.location.search);
     if (slug) {
       params.set("category", slug);
@@ -173,6 +175,7 @@ export default function CourseCatalogClient({
                   .filter((cat) => (coursesByCategory.get(cat.id) ?? []).length > 0)
                   .map((cat, index) => {
                     const count = (coursesByCategory.get(cat.id) ?? []).length;
+                    const isClicked = clickedId === cat.id && isPending;
                     return (
                       <motion.button
                         key={cat.id}
@@ -181,10 +184,20 @@ export default function CourseCatalogClient({
                         viewport={{ once: true }}
                         transition={{ duration: 0.5, delay: Math.min(index * 0.08, 0.4) }}
                         whileHover={{ y: -4 }}
-                        whileTap={{ scale: 0.97 }}
-                        onClick={() => selectCategory(cat.slug)}
-                        className="group text-left rounded-2xl border border-[#8A93B8]/15 bg-[#0f1530] overflow-hidden hover:border-[#F2C14E]/40 transition-colors"
+                        whileTap={{ scale: 0.96 }}
+                        onClick={() => selectCategory(cat.slug, cat.id)}
+                        disabled={isPending}
+                        className={`group relative text-left rounded-2xl border overflow-hidden active:border-[#F2C14E] active:bg-[#1a2046] transition-all duration-150 ${
+                          isClicked
+                            ? "border-[#F2C14E] bg-[#1a2046]"
+                            : "border-[#8A93B8]/15 bg-[#0f1530] hover:border-[#F2C14E]/40"
+                        }`}
                       >
+                        {isClicked && (
+                          <div className="absolute inset-0 z-20 flex items-center justify-center bg-[#0b1026]/60">
+                            <Loader2 size={28} className="text-[#F2C14E] animate-spin" />
+                          </div>
+                        )}
                         {cat.cover_image_url && (
                           <div className="relative w-full h-36">
                             <Image
@@ -251,9 +264,9 @@ export default function CourseCatalogClient({
                       viewport={{ once: true }}
                       transition={{ duration: 0.5, delay: Math.min(index * 0.06, 0.4) }}
                       whileHover={{ y: -4 }}
-                      whileTap={{ scale: 0.97 }}
+                      whileTap={{ scale: 0.96 }}
                       href={localizedPath(`/courses/${course.slug}`, locale)}
-                      className="group relative rounded-2xl border border-[#8A93B8]/15 bg-[#0f1530] overflow-hidden hover:border-[#F2C14E]/40 transition-colors flex flex-col"
+                      className="group relative rounded-2xl border border-[#8A93B8]/15 bg-[#0f1530] overflow-hidden hover:border-[#F2C14E]/40 active:border-[#F2C14E] active:bg-[#1a2046] transition-all duration-150 flex flex-col"
                     >
                       {showsStartsSoon && (
                         <span className="absolute top-3 right-3 z-10 rounded-full bg-[#F2C14E] text-[#0B1026] text-xs font-body font-semibold px-3 py-1">
