@@ -60,3 +60,31 @@ h1, h2, h3, .font-display {
   animation: twinkle 4s ease-in-out infinite;
   transform-origin: center;
 }
+
+/* Global instant click feedback. Every button, link, and anything marked
+   clickable gets a brief press-down feel the moment it's touched/clicked —
+   this fires immediately on :active, before any navigation, network
+   request, or state update has even started, so a click never feels like
+   it "did nothing." This is intentionally a blanket rule rather than
+   something added component-by-component, so nothing on the site is
+   missed by accident. */
+a, button, [role="button"], summary, .cursor-pointer {
+  transition: transform 0.1s ease, opacity 0.1s ease, filter 0.1s ease;
+}
+
+a:active, button:active, [role="button"]:active, summary:active, .cursor-pointer:active {
+  transform: scale(0.96);
+  opacity: 0.85;
+}
+
+/* Disabled controls shouldn't show the pressed effect. */
+button:disabled:active, [aria-disabled="true"]:active {
+  transform: none;
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  a:active, button:active, [role="button"]:active, summary:active, .cursor-pointer:active {
+    transform: none;
+  }
+}

@@ -4,9 +4,9 @@ import { useRef, useMemo, useState, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 
-const TRAIL_COUNT_FULL = 60;
-const TRAIL_COUNT_LIGHT = 18;
-const CONVERGING_COUNT_FULL = 6;
+const TRAIL_COUNT_FULL = 36;
+const TRAIL_COUNT_LIGHT = 14;
+const CONVERGING_COUNT_FULL = 5;
 const CONVERGING_COUNT_LIGHT = 3;
 
 // Deterministic pseudo-random (same approach as the rest of the site —
@@ -101,14 +101,21 @@ function LightTrail({ trail, clockRef, glowTexture }: { trail: Trail; clockRef: 
   );
   const line = useMemo(() => new THREE.Line(geometry, material), [geometry, material]);
 
+  // Pre-allocated once per trail and mutated in place every frame, instead
+  // of allocating 49 new Vector3 objects per trail on every single frame
+  // (up to ~3,000 allocations/sec across all trails on desktop). That GC
+  // pressure was very likely a real contributor to clicks/category
+  // switches feeling sluggish even though the underlying state update
+  // itself is cheap — the main thread was busy collecting garbage.
+  const segments = 48;
+  const pointsPool = useMemo(
+    () => Array.from({ length: segments + 1 }, () => new THREE.Vector3()),
+    []
+  );
+
   useFrame(() => {
     const elapsed = clockRef.current;
     const t = (elapsed * trail.speed + trail.phase) % 8;
-    // More segments = smoother curve, less "blocky/polygonal" look on the
-    // converging trails' bend toward the North Star. Step is halved to
-    // compensate so total trail length/timing stays the same as before.
-    const segments = 48;
-    const points: THREE.Vector3[] = [];
 
     for (let s = 0; s <= segments; s++) {
       const segT = Math.max(0, t - s * 0.02);
@@ -128,15 +135,15 @@ function LightTrail({ trail, clockRef, glowTexture }: { trail: Trail; clockRef: 
         y = THREE.MathUtils.lerp(riseY, NORTH_STAR_POS.y, eased * 0.3);
       }
 
-      points.push(new THREE.Vector3(x, y, z));
+      pointsPool[s].set(x, y, z);
     }
 
-    geometry.setFromPoints(points);
+    geometry.setFromPoints(pointsPool);
 
     // Graceful fade: converging trails dim as they approach the North Star
     // (rather than abruptly vanishing), ambient trails dim near the top of
     // frame as they exit view.
-    const headPoint = points[points.length - 1];
+    const headPoint = pointsPool[pointsPool.length - 1];
     const distToStar = trail.converges ? headPoint.distanceTo(NORTH_STAR_POS) : 1;
     const nearStarFade = trail.converges
       ? THREE.MathUtils.clamp(distToStar / 0.6, 0, 1)
@@ -154,8 +161,8 @@ function LightTrail({ trail, clockRef, glowTexture }: { trail: Trail; clockRef: 
     // flowing upward rather than just static rising lines.
     if (trail.converges && pulseRef.current) {
       const pulseT = (t / 8 + 0.3) % 1; // offset so it doesn't start at the base
-      const idx = Math.min(Math.floor(pulseT * segments), points.length - 1);
-      pulseRef.current.position.copy(points[idx]);
+      const idx = Math.min(Math.floor(pulseT * segments), pointsPool.length - 1);
+      pulseRef.current.position.copy(pointsPool[idx]);
       const pulseVisible = pulseT > 0.05 && pulseT < 0.95;
       (pulseRef.current.material as THREE.SpriteMaterial).opacity = pulseVisible
         ? 0.9 * nearStarFade

@@ -8,6 +8,7 @@ import RelatedCourses from "@/components/RelatedCourses";
 import CourseFaqAccordion from "@/components/CourseFaqAccordion";
 import PageAscentBackground from "@/components/PageAscentBackground";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowLeft, Users } from "lucide-react";
 import type { Locale } from "@/lib/locale";
 import { localized, daysUntil, localizedPath } from "@/lib/locale";
@@ -117,12 +118,16 @@ export default async function CourseDetailContent({
               </h1>
 
               {course.cover_image_url && (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={course.cover_image_url}
-                  alt={title}
-                  className="w-full rounded-2xl mb-8 object-cover max-h-80"
-                />
+                <div className="relative w-full mb-8 rounded-2xl overflow-hidden aspect-[16/9] max-h-80">
+                  <Image
+                    src={course.cover_image_url}
+                    alt={title}
+                    fill
+                    priority
+                    sizes="(max-width: 1024px) 100vw, 66vw"
+                    className="object-cover"
+                  />
+                </div>
               )}
 
               {/* Marketing pitch — visually distinct (#6): brighter text,

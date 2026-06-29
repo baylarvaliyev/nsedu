@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import type { Locale } from "@/lib/locale";
 import { localized, localizedPath } from "@/lib/locale";
 
@@ -39,8 +40,15 @@ export default function RelatedCourses({
             className="group rounded-xl border border-[#8A93B8]/15 bg-[#0f1530] overflow-hidden hover:border-[#F2C14E]/40 transition-colors"
           >
             {course.cover_image_url && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={course.cover_image_url} alt="" className="w-full h-28 object-cover" />
+              <div className="relative w-full h-28">
+                <Image
+                  src={course.cover_image_url}
+                  alt=""
+                  fill
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                  className="object-cover"
+                />
+              </div>
             )}
             <div className="p-4">
               <p className="font-display text-base text-[#F5F3EE] group-hover:text-[#F2C14E] transition-colors mb-1">

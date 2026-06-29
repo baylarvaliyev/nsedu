@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { Menu, X } from "lucide-react";
 import type { Locale } from "@/lib/locale";
 import { localizedPath } from "@/lib/locale";
@@ -26,8 +27,7 @@ export default function Header({ locale = "en" as Locale }: { locale?: Locale })
       <header className="fixed top-0 left-0 right-0 z-40 bg-[#0b1026]/80 backdrop-blur-sm border-b border-[#8A93B8]/10">
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
         <a href={localizedPath("/", locale)} className="flex items-center gap-2">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo.png" alt="North Star Academy" className="h-9 w-auto" />
+          <Image src="/logo.png" alt="North Star Academy" width={36} height={36} priority className="h-9 w-auto" />
           <span className="font-display text-lg text-[#F5F3EE] tracking-tight">
             North Star Academy
           </span>

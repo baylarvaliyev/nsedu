@@ -3,6 +3,7 @@
 import { useMemo, useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import type { Course, Category } from "./CourseCatalog";
 import type { Locale } from "@/lib/locale";
@@ -185,12 +186,15 @@ export default function CourseCatalogClient({
                         className="group text-left rounded-2xl border border-[#8A93B8]/15 bg-[#0f1530] overflow-hidden hover:border-[#F2C14E]/40 transition-colors"
                       >
                         {cat.cover_image_url && (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
-                            src={cat.cover_image_url}
-                            alt=""
-                            className="w-full h-36 object-cover"
-                          />
+                          <div className="relative w-full h-36">
+                            <Image
+                              src={cat.cover_image_url}
+                              alt=""
+                              fill
+                              sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                              className="object-cover"
+                            />
+                          </div>
                         )}
                         <div className="p-6">
                           <h3 className="font-display text-xl text-[#F5F3EE] group-hover:text-[#F2C14E] transition-colors mb-2">
@@ -257,12 +261,15 @@ export default function CourseCatalogClient({
                         </span>
                       )}
                       {course.cover_image_url && (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          src={course.cover_image_url}
-                          alt=""
-                          className="w-full h-36 object-cover"
-                        />
+                        <div className="relative w-full h-36">
+                          <Image
+                            src={course.cover_image_url}
+                            alt=""
+                            fill
+                            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                            className="object-cover"
+                          />
+                        </div>
                       )}
                       <div className="p-6 flex flex-col flex-1">
                         {course.level && (
