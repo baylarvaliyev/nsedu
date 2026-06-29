@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { trackMetaEvent } from "@/lib/metaPixel";
 import type { Locale } from "@/lib/locale";
 
 // WhatsApp number for North Star Academy enrollment leads.
@@ -112,6 +113,14 @@ export default function EnrollmentForm({
       return;
     }
 
+    // Lead is only counted once the enrollment is actually saved to our
+    // database — firing it earlier (e.g. on click) would count abandoned
+    // or failed submissions as leads.
+    trackMetaEvent("Lead", {
+      content_name: courseTitle,
+      content_category: courseId,
+    });
+
     // 2. Also send via Web3Forms so it lands in email immediately
     try {
       await fetch("https://api.web3forms.com/submit", {
@@ -151,6 +160,7 @@ export default function EnrollmentForm({
           href={whatsappLink}
           target="_blank"
           rel="noopener noreferrer"
+          onClick={() => trackMetaEvent("Contact", { content_name: courseTitle })}
           className="inline-flex items-center justify-center rounded-full bg-[#25D366] text-white font-body text-sm font-semibold px-5 py-2.5 hover:bg-[#21bd5b] transition-colors"
         >
           {t.whatsapp_cta}

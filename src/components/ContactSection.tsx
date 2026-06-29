@@ -1,6 +1,7 @@
 "use client";
 
 import type { Locale } from "@/lib/locale";
+import { trackMetaEvent } from "@/lib/metaPixel";
 import { MessageCircle, Phone } from "lucide-react";
 
 const WHATSAPP_NUMBER = "994773698929";
@@ -57,6 +58,7 @@ export default function ContactSection({ locale = "en" as Locale }: { locale?: L
             href={whatsappLink}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => trackMetaEvent("Contact", { content_name: "general_inquiry" })}
             className="inline-flex items-center gap-2 rounded-full bg-[#25D366] text-white font-body font-semibold text-sm px-7 py-3 hover:bg-[#21bd5b] transition-colors"
           >
             <MessageCircle size={18} />
