@@ -40,7 +40,7 @@ export default function RelatedCourses({
             className="group rounded-xl border border-[#8A93B8]/15 bg-[#0f1530] overflow-hidden hover:border-[#F2C14E]/40 transition-colors"
           >
             {course.cover_image_url && (
-              <div className="relative w-full h-28">
+              <div className="relative w-full aspect-[1000/380]">
                 <Image
                   src={course.cover_image_url}
                   alt=""

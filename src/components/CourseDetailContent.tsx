@@ -118,7 +118,7 @@ export default async function CourseDetailContent({
               </h1>
 
               {course.cover_image_url && (
-                <div className="relative w-full mb-8 rounded-2xl overflow-hidden aspect-[16/9] max-h-80">
+                <div className="relative w-full mb-8 rounded-2xl overflow-hidden aspect-[1000/380]">
                   <Image
                     src={course.cover_image_url}
                     alt={title}

@@ -199,7 +199,7 @@ export default function CourseCatalogClient({
                           </div>
                         )}
                         {cat.cover_image_url && (
-                          <div className="relative w-full h-36">
+                          <div className="relative w-full aspect-[1000/380]">
                             <Image
                               src={cat.cover_image_url}
                               alt=""
@@ -274,7 +274,7 @@ export default function CourseCatalogClient({
                         </span>
                       )}
                       {course.cover_image_url && (
-                        <div className="relative w-full h-36">
+                        <div className="relative w-full aspect-[1000/380]">
                           <Image
                             src={course.cover_image_url}
                             alt=""
