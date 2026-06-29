@@ -25,45 +25,50 @@ function CourseRow({ course }: { course: CourseListItem }) {
 
   return (
     <Reorder.Item value={course} dragListener={false} dragControls={dragControls}>
-      {/* Mobile card */}
-      <div className="sm:hidden bg-white rounded-xl border border-[#e5e3dc] p-4 mb-3">
-        <div className="flex items-start gap-2 mb-2">
-          <button
-            onPointerDown={(e) => dragControls.start(e)}
-            className="cursor-grab active:cursor-grabbing text-[#bbb] hover:text-[#888] touch-none shrink-0 mt-0.5"
-            aria-label="Drag to reorder"
-          >
-            <GripVertical size={18} />
-          </button>
-          <p className="font-body text-sm font-medium text-[#0B1026] flex-1">{course.title_en}</p>
-          <span
-            className={`font-body text-xs rounded-full px-2.5 py-1 shrink-0 ${
-              course.is_published ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700"
-            }`}
-          >
-            {course.is_published ? "Published" : "Draft"}
-          </span>
-        </div>
-        <p className="font-body text-sm text-[#555] mb-1 pl-7">
-          {course.price_amount ? `${course.price_amount} ${course.price_currency}` : "—"}
-          {course.start_date &&
-            ` · Starts ${new Date(course.start_date).toLocaleDateString("en-GB", {
-              day: "numeric",
-              month: "short",
-            })}`}
-        </p>
-        <div className="flex items-center gap-4 mt-2 flex-wrap pl-7">
-          <Link href={`/admin/courses/${course.id}`} className="font-body text-sm text-[#0B1026] underline">
-            Edit
-          </Link>
-          <DuplicateCourseButton courseId={course.id} />
-          <DeleteCourseButton courseId={course.id} courseTitle={course.title_en} />
+      {/* Mobile card — fixed height (h-20) and truncated text, so every
+          row is the same size while dragging. Reorder's drop-position
+          math assumes roughly uniform item heights; variable-height rows
+          (long titles wrapping to 2 lines, etc.) is what made drops land
+          in seemingly random places. */}
+      <div className="sm:hidden bg-white rounded-xl border border-[#e5e3dc] mb-3 h-20 flex items-center px-4 gap-3">
+        <button
+          onPointerDown={(e) => dragControls.start(e)}
+          className="cursor-grab active:cursor-grabbing text-[#bbb] hover:text-[#888] touch-none shrink-0"
+          aria-label="Drag to reorder"
+        >
+          <GripVertical size={18} />
+        </button>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center justify-between gap-2 mb-1">
+            <p className="font-body text-sm font-medium text-[#0B1026] truncate">{course.title_en}</p>
+            <span
+              className={`font-body text-xs rounded-full px-2 py-0.5 shrink-0 ${
+                course.is_published ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700"
+              }`}
+            >
+              {course.is_published ? "Published" : "Draft"}
+            </span>
+          </div>
+          <div className="flex items-center gap-4">
+            <p className="font-body text-xs text-[#555] truncate">
+              {course.price_amount ? `${course.price_amount} ${course.price_currency}` : "—"}
+            </p>
+            <Link href={`/admin/courses/${course.id}`} className="font-body text-xs text-[#0B1026] underline shrink-0">
+              Edit
+            </Link>
+            <span className="shrink-0">
+              <DuplicateCourseButton courseId={course.id} />
+            </span>
+            <span className="shrink-0">
+              <DeleteCourseButton courseId={course.id} courseTitle={course.title_en} />
+            </span>
+          </div>
         </div>
       </div>
 
-      {/* Desktop table row */}
-      <div className="hidden sm:grid sm:grid-cols-[auto_1fr_140px_140px_120px_auto] sm:items-center bg-white border-b border-[#f0eee8]">
-        <div className="px-5 py-3">
+      {/* Desktop table row — fixed height (h-14), truncated title. */}
+      <div className="hidden sm:grid sm:grid-cols-[auto_1fr_140px_140px_120px_auto] sm:items-center bg-white border-b border-[#f0eee8] h-14">
+        <div className="px-5">
           <button
             onPointerDown={(e) => dragControls.start(e)}
             className="cursor-grab active:cursor-grabbing text-[#bbb] hover:text-[#888] touch-none"
@@ -72,11 +77,11 @@ function CourseRow({ course }: { course: CourseListItem }) {
             <GripVertical size={18} />
           </button>
         </div>
-        <div className="px-5 py-3 font-body text-sm text-[#0B1026]">{course.title_en}</div>
-        <div className="px-5 py-3 font-body text-sm text-[#555]">
+        <div className="px-5 font-body text-sm text-[#0B1026] truncate">{course.title_en}</div>
+        <div className="px-5 font-body text-sm text-[#555] truncate">
           {course.price_amount ? `${course.price_amount} ${course.price_currency}` : "—"}
         </div>
-        <div className="px-5 py-3 font-body text-sm text-[#555]">
+        <div className="px-5 font-body text-sm text-[#555] truncate">
           {course.start_date
             ? new Date(course.start_date).toLocaleDateString("en-GB", {
                 day: "numeric",
@@ -85,7 +90,7 @@ function CourseRow({ course }: { course: CourseListItem }) {
               })
             : "—"}
         </div>
-        <div className="px-5 py-3">
+        <div className="px-5">
           <span
             className={`font-body text-xs rounded-full px-2.5 py-1 ${
               course.is_published ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700"
@@ -94,7 +99,7 @@ function CourseRow({ course }: { course: CourseListItem }) {
             {course.is_published ? "Published" : "Draft"}
           </span>
         </div>
-        <div className="px-5 py-3 text-right whitespace-nowrap">
+        <div className="px-5 text-right whitespace-nowrap">
           <Link href={`/admin/courses/${course.id}`} className="font-body text-sm text-[#0B1026] underline mr-4">
             Edit
           </Link>

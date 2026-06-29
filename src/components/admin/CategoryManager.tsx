@@ -74,6 +74,14 @@ function CategoryEditRow({ cat }: { cat: Category }) {
 
   return (
     <div className="bg-[#f7f6f3] rounded-lg p-4 mt-3">
+      <p className="font-body text-xs text-[#888] mb-2">Cover image</p>
+      <div className="mb-4">
+        <ImageUpload
+          value={cat.cover_image_url}
+          onChange={(url) => updateCategoryImageStatic(cat.id, url, router)}
+          folder="categories"
+        />
+      </div>
       <p className="font-body text-xs text-[#888] mb-2">Name</p>
       <div className="grid sm:grid-cols-3 gap-2 mb-3">
         <input value={nameEn} onChange={(e) => setNameEn(e.target.value)} placeholder="English" className={inputClass} />
@@ -98,18 +106,28 @@ function CategoryEditRow({ cat }: { cat: Category }) {
   );
 }
 
+async function updateCategoryImageStatic(
+  id: string,
+  url: string | null,
+  router: ReturnType<typeof useRouter>
+) {
+  const supabase = createClient();
+  await supabase.from("categories").update({ cover_image_url: url }).eq("id", id);
+  router.refresh();
+}
+
 function CategoryRow({
   cat,
   editingId,
   setEditingId,
   handleDelete,
-  updateCategoryImage,
+  anyRowEditing,
 }: {
   cat: Category;
   editingId: string | null;
   setEditingId: (id: string | null) => void;
   handleDelete: (id: string) => void;
-  updateCategoryImage: (id: string, url: string | null) => void;
+  anyRowEditing: boolean;
 }) {
   const dragControls = useDragControls();
 
@@ -118,27 +136,38 @@ function CategoryRow({
       value={cat}
       dragListener={false}
       dragControls={dragControls}
-      className="px-5 py-4 border-b border-[#f0eee8] last:border-0 bg-white"
+      className="border-b border-[#f0eee8] last:border-0 bg-white"
     >
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex items-start gap-3 flex-1">
+      {/* Fixed height row (h-16) regardless of content, so every item is
+          the same size while dragging — Reorder's drop-position math
+          assumes roughly uniform item heights, and the previous version
+          (full-size image upload inline, wildly different per row) is
+          what caused drops landing in seemingly random places. */}
+      <div className="flex items-center justify-between gap-4 px-5 h-16">
+        <div className="flex items-center gap-3 flex-1 min-w-0">
           <button
-            onPointerDown={(e) => dragControls.start(e)}
-            className="cursor-grab active:cursor-grabbing text-[#bbb] hover:text-[#888] mt-1 touch-none"
+            onPointerDown={(e) => !anyRowEditing && dragControls.start(e)}
+            disabled={anyRowEditing}
+            className="cursor-grab active:cursor-grabbing text-[#bbb] hover:text-[#888] touch-none shrink-0 disabled:opacity-30 disabled:cursor-not-allowed"
             aria-label="Drag to reorder"
           >
             <GripVertical size={18} />
           </button>
-          <div className="flex-1">
-            <p className="font-body text-sm text-[#0B1026]">{cat.name_en}</p>
-            <p className="font-body text-xs text-[#888] mb-3">
+          {cat.cover_image_url ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={cat.cover_image_url}
+              alt=""
+              className="w-10 h-10 rounded-lg object-cover shrink-0"
+            />
+          ) : (
+            <div className="w-10 h-10 rounded-lg bg-[#f0eee8] shrink-0" />
+          )}
+          <div className="min-w-0">
+            <p className="font-body text-sm text-[#0B1026] truncate">{cat.name_en}</p>
+            <p className="font-body text-xs text-[#888] truncate">
               {cat.name_az} · {cat.name_ru}
             </p>
-            <ImageUpload
-              value={cat.cover_image_url}
-              onChange={(url) => updateCategoryImage(cat.id, url)}
-              folder="categories"
-            />
           </div>
         </div>
         <div className="flex items-center gap-3 shrink-0">
@@ -158,7 +187,7 @@ function CategoryRow({
           </button>
         </div>
       </div>
-      {editingId === cat.id && <CategoryEditRow cat={cat} />}
+      {editingId === cat.id && <div className="px-5 pb-4">{<CategoryEditRow cat={cat} />}</div>}
     </Reorder.Item>
   );
 }
@@ -242,12 +271,6 @@ export default function CategoryManager({
     router.refresh();
   }
 
-  async function updateCategoryImage(id: string, url: string | null) {
-    const supabase = createClient();
-    await supabase.from("categories").update({ cover_image_url: url }).eq("id", id);
-    router.refresh();
-  }
-
   async function handleReorder(newOrder: Category[]) {
     setOrderedCategories(newOrder);
     const supabase = createClient();
@@ -303,7 +326,7 @@ export default function CategoryManager({
               editingId={editingId}
               setEditingId={setEditingId}
               handleDelete={handleDelete}
-              updateCategoryImage={updateCategoryImage}
+              anyRowEditing={editingId !== null}
             />
           ))}
         </Reorder.Group>
