@@ -85,19 +85,21 @@ export default function CoursesPageIntro({
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.4 }}
-          className="mt-8"
+          className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3"
         >
           <Link
             href="/career-calculator"
             className="inline-flex items-center gap-2 font-body text-sm text-[#8A93B8] hover:text-[#F2C14E] transition-colors border border-[#8A93B8]/20 hover:border-[#F2C14E]/40 rounded-full px-5 py-2.5 active:scale-95"
           >
             <span>✦</span>
-            {locale === "az"
-              ? "Haradan başlayacağınızı bilmirsiniz? Karyera kalkulyatorunu sınayın"
-              : locale === "ru"
-              ? "Не знаете, с чего начать? Попробуйте калькулятор карьеры"
-              : "Not sure where to start? Try the Career Calculator"}
-            →
+            {locale === "az" ? "Karyera kalkulyatoru" : locale === "ru" ? "Калькулятор карьеры" : "Career Calculator"} →
+          </Link>
+          <Link
+            href="/course-quiz"
+            className="inline-flex items-center gap-2 font-body text-sm text-[#8A93B8] hover:text-[#F2C14E] transition-colors border border-[#8A93B8]/20 hover:border-[#F2C14E]/40 rounded-full px-5 py-2.5 active:scale-95"
+          >
+            <span>✦</span>
+            {locale === "az" ? "Mənə uyğun kursu tap" : locale === "ru" ? "Подобрать курс" : "Find the right course"} →
           </Link>
         </motion.div>
       </div>
