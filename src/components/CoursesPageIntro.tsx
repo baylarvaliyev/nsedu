@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Link from "next/link";
 import type { Locale } from "@/lib/locale";
 
 const INTRO_STRINGS = {
@@ -78,6 +79,26 @@ export default function CoursesPageIntro({
               {locale === "az" ? "Sahə" : locale === "ru" ? "Направления" : "Fields"}
             </p>
           </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.4 }}
+          className="mt-8"
+        >
+          <Link
+            href="/career-calculator"
+            className="inline-flex items-center gap-2 font-body text-sm text-[#8A93B8] hover:text-[#F2C14E] transition-colors border border-[#8A93B8]/20 hover:border-[#F2C14E]/40 rounded-full px-5 py-2.5 active:scale-95"
+          >
+            <span>✦</span>
+            {locale === "az"
+              ? "Haradan başlayacağınızı bilmirsiniz? Karyera kalkulyatorunu sınayın"
+              : locale === "ru"
+              ? "Не знаете, с чего начать? Попробуйте калькулятор карьеры"
+              : "Not sure where to start? Try the Career Calculator"}
+            →
+          </Link>
         </motion.div>
       </div>
     </section>
