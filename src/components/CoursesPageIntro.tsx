@@ -101,6 +101,13 @@ export default function CoursesPageIntro({
             <span>✦</span>
             {locale === "az" ? "Mənə uyğun kursu tap" : locale === "ru" ? "Подобрать курс" : "Find the right course"} →
           </Link>
+          <Link
+            href="/compare"
+            className="inline-flex items-center gap-2 font-body text-sm text-[#8A93B8] hover:text-[#F2C14E] transition-colors border border-[#8A93B8]/20 hover:border-[#F2C14E]/40 rounded-full px-5 py-2.5 active:scale-95"
+          >
+            <span>✦</span>
+            {locale === "az" ? "Kursları müqayisə et" : locale === "ru" ? "Сравнить курсы" : "Compare courses"} →
+          </Link>
         </motion.div>
       </div>
     </section>
