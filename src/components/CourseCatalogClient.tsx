@@ -68,10 +68,12 @@ const CATALOG_STRINGS = {
 export default function CourseCatalogClient({
   courses,
   categories,
+  enrollmentMap = {},
   locale = "en" as Locale,
 }: {
   courses: Course[];
   categories: Category[];
+  enrollmentMap?: Record<string, number>;
   locale?: Locale;
 }) {
   const router = useRouter();
@@ -380,6 +382,16 @@ export default function CourseCatalogClient({
                               <span className="font-body text-sm font-semibold text-[#F2C14E]">
                                 {course.price_amount} {course.price_currency}
                               </span>
+                            </span>
+                          )}
+                          {!course.price_amount && (enrollmentMap[course.id] ?? 0) >= 3 && (
+                            <span className="font-body text-xs text-[#8A93B8]">
+                              🔥 {enrollmentMap[course.id]} {locale === "az" ? "bu ay qeydiyyat" : locale === "ru" ? "заявок в этом месяце" : "enrolled this month"}
+                            </span>
+                          )}
+                          {course.price_amount && (enrollmentMap[course.id] ?? 0) >= 3 && (
+                            <span className="font-body text-xs text-[#8A93B8]">
+                              🔥 {enrollmentMap[course.id]} {locale === "az" ? "bu ay" : locale === "ru" ? "в этом месяце" : "this month"}
                             </span>
                           )}
                           {course.start_date && (

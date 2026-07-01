@@ -30,6 +30,7 @@ export default async function CoursesIndexContent({
     { count: categoryCount },
     { data: courses },
     { data: categories },
+    { data: enrollmentCounts },
   ] = await Promise.all([
     supabase
       .from("faq_items")
@@ -48,7 +49,23 @@ export default async function CoursesIndexContent({
       .from("categories")
       .select("id, slug, name_az, name_en, name_ru, description_az, description_en, description_ru, cover_image_url")
       .order("display_order", { ascending: true }),
+    // Enrollment counts per course for the last 30 days — used to show
+    // "X enrolled this month" on cards, only when count is meaningful (≥3).
+    supabase
+      .from("enrollment_leads")
+      .select("course_id")
+      .gte("created_at", new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()),
   ]);
+
+  // Build a map of course_id → count for the last 30 days.
+  // Only passed to the client if count ≥ 3 to avoid showing "1 enrolled"
+  // on a brand-new academy, which hurts rather than helps trust.
+  const enrollmentMap: Record<string, number> = {};
+  for (const row of enrollmentCounts ?? []) {
+    if (row.course_id) {
+      enrollmentMap[row.course_id] = (enrollmentMap[row.course_id] ?? 0) + 1;
+    }
+  }
 
   return (
     <>
@@ -63,6 +80,7 @@ export default async function CoursesIndexContent({
         <CourseCatalogClient
           courses={(courses ?? []) as Course[]}
           categories={(categories ?? []) as Category[]}
+          enrollmentMap={enrollmentMap}
           locale={locale}
         />
         <FaqSection items={faqItems ?? []} locale={locale} />
